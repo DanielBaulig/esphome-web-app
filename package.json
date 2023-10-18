@@ -1,4 +1,17 @@
 {
+  "name": "esphome-web-app",
+  "private": true,
+  "version": "0.0.1",
+  "description": "A standalone app for flashing, provisioning and controlling of the ESPhome devices",
+  "keywords": [
+    "esphome",
+    "web",
+    "home",
+    "assistant",
+    "esp32",
+    "esp8266",
+    "home",
+    "automation"
   "dependencies": {
     "@vitejs/plugin-react": "^4.1.0",
     "esphome-web": "github:DanielBaulig/esphome-web-js",
