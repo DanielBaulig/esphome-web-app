@@ -1,0 +1,10 @@
+{
+  "name": "Neewer Controller",
+  "icons": [{
+    "src": "/icons/256.png",
+    "type": "image/png",
+    "sizes": "256x256"
+  }],
+  "start_url": "/",
+  "display": "standalone"
+}

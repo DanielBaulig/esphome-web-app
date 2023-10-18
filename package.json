@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.1.0",
+    "esphome-web": "github:DanielBaulig/esphome-web-js",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rollup-plugin-output-manifest": "^2.0.0",
+    "vite": "^4.4.11"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  }
+}

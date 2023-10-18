@@ -1,0 +1,9 @@
+body {
+  font-size: 2em;
+  margin: 1rem 2rem;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+}

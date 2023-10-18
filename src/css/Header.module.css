@@ -1,0 +1,22 @@
+.header {
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  flex-grow: 1;
+}
+
+.menu button {
+  min-width: 125px;
+  min-height: 125px;
+  padding: 0 2rem;
+} 
+
+.menu {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+}
