@@ -12,6 +12,7 @@
     "esp8266",
     "home",
     "automation"
+  ],
   "dependencies": {
     "@vitejs/plugin-react": "^4.1.0",
     "esphome-web": "github:DanielBaulig/esphome-web-js",
