@@ -1,4 +1,6 @@
 import { useId, useEffect, useState, useReducer } from 'react';
+import ESPHomeWebLightComponent from './components/entities/ESPHomeWebLightComponent';
+import ESPHomeWebEntityCard from './components/ESPHomeWebEntityCard';
 import { 
   controllerList, 
   listItem, 
@@ -89,13 +91,19 @@ function rgbToHex(color) {
 }
 
 function ControllerCard({controller}) {
-  const [state, dispatch] = useLightEntityReducer(getLightEntity(controller));
+  const entity = getLightEntity(controller);
+  const [state, dispatch] = useLightEntityReducer(entity);
 
   // color_temp is given in Mireds
   const colorTempKelvin = 1000000 / state.color_temp;
   const brightnessId = useId();
   const colorTempId = useId();
   const colorId = useId();
+  
+  return <ESPHomeWebLightComponent 
+    entity={entity}
+  />
+
 
   let detailControls = null;
   if (state.state == 'ON') {
@@ -204,6 +212,7 @@ function ControllerListItem({controller, onRemove}) {
   if (state.connecting) {
     card = <div>Connecting...</div>;
   } else if (state.discovered) {
+    // card = <ControllerCard controller={controller} />;
     card = <ControllerCard controller={controller} />;
   } else if (state.connected) {
     card = <div>Discovering NW660...</div>;
