@@ -2,7 +2,7 @@ import {useId} from 'react';
 
 import ResponsiveInput from './ResponsiveInput';
 
-export default function RangeInput({min, max, value, onChange, label}) {
+export default function RangeInput({min, max, value, onChange, label, list}) {
   const id = useId();
 
   return <>
@@ -14,6 +14,7 @@ export default function RangeInput({min, max, value, onChange, label}) {
       max={max}
       value={value}
       onChange={onChange}
+      list={list}
     />
   </>;
 }

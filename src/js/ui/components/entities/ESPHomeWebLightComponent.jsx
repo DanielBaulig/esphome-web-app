@@ -1,6 +1,6 @@
 import {useReducer, useEffect} from 'react';
 import ESPHomeWebBrightnessInput from './inputs/ESPHomeWebBrightnessInput';
-import ESPHomeWebRGBInput from './inputs/ESPHomeWebRGBInput';
+import ESPHomeWebLightColorComponent from './ESPHomeWebLightColorComponent';
 
 function useESPHomeWebEntityState(entity) {
   const [state, dispatch] = useReducer((state, action) => {
@@ -33,24 +33,20 @@ export default function ESPHomeWebLightComponent({
     <button>Turn off</button>
   </>;
 
-  let colorControl = null;
-  if (state.color_mode === 'rgb') {
-    colorControl = <ESPHomeWebRGBInput 
-      red={state.color.r} 
-      green={state.color.g} 
-      blue={state.color.b} 
-      onChange={color => entity.turnOn({r: color.red, g: color.green, b: color.blue})}
-    />;
-  }
 
   let controls = null;
   if (state.state === 'ON') {
     controls = <>
+      <ESPHomeWebLightColorComponent 
+        colorMode={state.color_mode} 
+        colorTemp={state.color_temp} 
+        color={state.color} 
+        onTurnOn={entity.turnOn.bind(entity)}
+      />
       <ESPHomeWebBrightnessInput 
         value={state.brightness} 
-        onChange={brightness => console.log('Change brightness!', brightness)}
+        onChange={value => entity.turnOn({brightness: value})}
       />
-      {colorControl}
     </>;
   }
 

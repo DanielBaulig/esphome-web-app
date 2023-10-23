@@ -227,7 +227,7 @@ function ControllerListItem({controller, onRemove}) {
   return <li className={listItem}>
     <header>
       <button className={hostName} onClick={toggleConnection}><h3>{controller.host}</h3></button>
-      <button onClick={onRemove}>Remove</button>
+      <button onClick={onRemove}>&#x2716;</button>
     </header>
     {card}
   </li>;

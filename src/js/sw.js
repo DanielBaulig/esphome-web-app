@@ -1,25 +1,23 @@
-console.log('HI WORKER');
 async function cacheResources(resources) {
   const cache = await caches.open('v1');
-  console.info('Caching Resources', resources);
+  console.debug('Caching Resources', resources);
   await cache.addAll(resources);
 }
 
 async function serveFromCache(request) {
   const response = fetch('http://neewer-controller-9c58d8.local/');
   const cachedResponse = await caches.match(request);
-  console.log('Looking for request in cache', request);
+  console.debug('Looking for request in cache', request);
   if (cachedResponse) {
-    console.info('Found in cache', request, cachedResponse);
+    console.debug('Found in cache', request, cachedResponse);
     return cachedResponse;
   }
 
-  console.info('Forwarding request', request);
+  console.debug('Forwarding request', request);
   return await fetch(request);
 }
 
 async function fetchManifest() {
-  console.log('Fetching manifest');
   const response = await fetch('/manifest.json');
   return await response.json();
 }
@@ -34,7 +32,7 @@ async function cacheManifestResources() {
 }
 
 self.addEventListener("install", event => {
-  console.info('Worker installed');
+  console.debug('Worker installed');
   event.waitUntil(Promise.all([cacheManifestResources(), cacheResources([
     '/index.html',
     '/icons/256.png',
@@ -42,15 +40,15 @@ self.addEventListener("install", event => {
 });
 
 self.addEventListener('activate', event => {
-  console.info('Worker activated');
+  console.debug('Worker activated');
 });
 
 self.addEventListener('fetch', (event) => {
   const request = event.request;
-  console.info('Worker fetch', request);
+  console.debug('Worker fetch', request);
   // Avoid handling CORS requests to ESP32
   if (request.mode == 'cors' && !request.url.startsWith(location.origin)) {
-    console.log('Skipping CORS request', request);
+    console.debug('Skipping CORS request', request);
     return;
   }
   return event.respondWith(serveFromCache(event.request));

@@ -8,10 +8,13 @@
 }
 
 .menu button {
-  min-width: 125px;
-  min-height: 125px;
-  padding: 0 2rem;
+  min-height: 3rem;
+  min-width: 3rem;
 } 
+
+.menu button h3 {
+  margin: 0;
+}
 
 .menu {
   list-style-type: none;

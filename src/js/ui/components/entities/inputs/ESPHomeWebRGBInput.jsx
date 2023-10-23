@@ -19,10 +19,8 @@ function rgbToHex(red, green, blue) {
 
 export default function ESPHomeWebRGBInput({red, green, blue, onChange}) {
   const hex = rgbToHex(red, green, blue);
-  console.log('hex', hex);
 
   return <ColorInput 
-    label="Color"
     color={hex} 
     onChange={(value) => onChange(hexToRGB(value))} 
   />;

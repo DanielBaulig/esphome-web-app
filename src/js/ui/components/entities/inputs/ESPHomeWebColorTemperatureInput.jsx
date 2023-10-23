@@ -1,3 +1,5 @@
+import { useId } from 'react';
+
 import RangeInput from './RangeInput';
 
 function miredsToKelvin(mireds) {
@@ -9,11 +11,21 @@ function kelvinToMireds(kelvin) {
 }
 
 export default function ESPHomeWebColorTemperatureInput({value, onChange}) {
-  return <RangeInput
-    label="Color Temperature (Kelvin)"
-    min="2000" 
-    max="6500" 
-    value={miredsToKelvin(value)}
-    onChange={(value) => onChange(kelvinToMireds(value))}
-  />;
+  const listId = useId();
+
+
+  return <>
+    <datalist id={listId}>
+      <option value="2700" label="Warm"></option>
+      <option value="3600" label="Cool"></option>
+      <option value="5200" label="Daylight"></option>
+    </datalist>
+    <RangeInput
+      list={listId}
+      min="2400" 
+      max="6500" 
+      value={miredsToKelvin(value)}
+      onChange={(value) => onChange(kelvinToMireds(value))}
+    />
+  </>;
 }
