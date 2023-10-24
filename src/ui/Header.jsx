@@ -1,4 +1,4 @@
-import { header, menu, title } from '../../css/Header.module.css';
+import { header, menu, title } from './Header.module.css';
 
 function Header({onAddController}) {
   return <header className={header}>

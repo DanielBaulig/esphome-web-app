@@ -9,7 +9,7 @@ import {
   stateCardButtons, 
   stateCardSliders,
   hostName,
-} from '../../css/ControllerList.module.css';
+} from './ControllerList.module.css';
 
 const lightId = 'light-neewer_660_rgb_light';
 

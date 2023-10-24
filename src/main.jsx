@@ -6,7 +6,7 @@ import ControllerRegistry from './ControllerRegistry.js';
 
 const registry = new ControllerRegistry();
 
-import '../css/main.css';
+import './main.css';
 
 function sw() {
   if (import.meta.env.DEV) {
