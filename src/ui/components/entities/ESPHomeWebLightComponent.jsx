@@ -1,38 +1,19 @@
-import {useReducer, useEffect} from 'react';
 import ESPHomeWebBrightnessInput from './inputs/ESPHomeWebBrightnessInput';
 import ESPHomeWebLightColorComponent from './ESPHomeWebLightColorComponent';
+import useESPHomeWebEntityState from './useESPHomeWebEntityState';
 
-import { lightComponent } from './ESPHomeWebLightComponent.module.css';
+import { splitEntityTypeAndName } from 'esphome-web';
 
-function useESPHomeWebEntityState(entity) {
-  const [state, dispatch] = useReducer((state, action) => {
-    switch(action.type) {
-      case 'update': 
-        return { ...state, ...action.state };
-    }
-    throw new Error(`Invalid action type ${action.type}.`);
-  }, entity.data);
-  useEffect(() => {
-    const listener = (event) => {
-      dispatch({type: 'update', state: entity.data});
-    }
-    entity.addEventListener('update', listener);
-    return () => {
-      entity.removeEventListener('update', listener);
-    };
-  }, [entity]);
-
-  return state;
-}
+import { lightComponent, brightness, state as stateClass } from './ESPHomeWebLightComponent.module.css';
 
 export default function ESPHomeWebLightComponent({
   entity,
 }) {
   const state = useESPHomeWebEntityState(entity);
   const stateControls = <>
-    <button>Turn on</button>
-    <button>Toggle</button>
-    <button>Turn off</button>
+    <button onClick={() => entity.turnOn()}>Turn on</button>
+    <button onClick={() => entity.toggle()}>Toggle</button>
+    <button onClick={() => entity.turnOff()}>Turn off</button>
   </>;
 
 
@@ -45,16 +26,29 @@ export default function ESPHomeWebLightComponent({
         color={state.color} 
         onTurnOn={entity.turnOn.bind(entity)}
       />
-      <ESPHomeWebBrightnessInput 
-        value={state.brightness} 
-        onChange={value => entity.turnOn({brightness: value})}
-      />
+      <fieldset className={brightness}>
+        <legend>Brightness</legend>
+        <ESPHomeWebBrightnessInput 
+          value={state.brightness} 
+          onChange={value => entity.turnOn({brightness: value})}
+        />
+      </fieldset>
     </>;
   }
 
-  return <ul className={lightComponent}>
-    <li>{state.state}</li>
-    <li>{controls}</li>
-    <li>{stateControls}</li>
-  </ul>;
+  const [,id] = splitEntityTypeAndName(state.id);
+
+  return <fieldset className={lightComponent}>
+    <legend>{state.name || id}</legend>
+    <ul>
+      <li>
+        <fieldset className={stateClass}>
+          <legend>State</legend>
+          <h3>{state.state}</h3>
+          {stateControls}
+        </fieldset>
+      </li>
+      <li>{controls}</li>
+    </ul>
+  </fieldset>;
 }

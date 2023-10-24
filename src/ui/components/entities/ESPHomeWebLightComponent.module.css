@@ -1,6 +1,37 @@
-.lightComponent {
+.lightComponent ul {
   list-style-type: none;
   padding: 0;
   border: 1px dotted gray;
   background-color: lightsteelblue;
+}
+
+.state {
+  display: flex;
+  flex-wrap: wrap;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.state h3 {
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  flex-basis: 100%;
+}
+
+.state button {
+  flex-grow: 1;
+}
+
+.brightness {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.brightness > * {
+  flex-basis: 100%;
 }
