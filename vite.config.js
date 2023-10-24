@@ -10,7 +10,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         app: "./index.html",
-        sw: "./src/js/sw.js",
+        sw: "./src/sw.js",
       },
       output: {
         entryFileNames: assetInfo => assetInfo.name == "sw" ? "[name].js" : "assets/js/[name]-[hash].js",
