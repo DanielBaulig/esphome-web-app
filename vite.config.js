@@ -5,7 +5,7 @@ import manifest from 'rollup-plugin-output-manifest';
 export default defineConfig({
   plugins: [react(), manifest({nameWithExt: false, filter: () => true})],
   build: {
-    assetsInlineLimit: 0,
+    manifest: 'vite-manifest.json',
     outDir: "./public",
     rollupOptions: {
       input: {

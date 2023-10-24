@@ -1,8 +1,10 @@
-import { header, menu, title } from './Header.module.css';
+import { header, menu, title as titleClass } from './Header.module.css';
+
+import { title } from '../../esphome-web.json';
 
 function Header({onAddController}) {
   return <header className={header}>
-    <h1 className={title}>ESPHome Web</h1>
+    <h1 className={titleClass}>{title}</h1>
     <nav>
       <ul className={menu}>
         <li><button onClick={onAddController}><h3>+</h3></button></li>

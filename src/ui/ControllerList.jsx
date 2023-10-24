@@ -1,7 +1,5 @@
 import { useId, useEffect, useState, useReducer, lazy, Suspense } from 'react';
 import { splitEntityTypeAndName } from 'esphome-web';
-import ESPHomeWebLightComponent from './components/entities/ESPHomeWebLightComponent';
-import ESPHomeWebEntityCard from './components/ESPHomeWebEntityCard';
 import Spinner from './Spinner';
 import { 
   controllerList, 
@@ -12,11 +10,7 @@ import {
   hostName,
 } from './ControllerList.module.css';
 
-const lightId = 'light-neewer_660_rgb_light';
-
-function getLightEntity(controller) {
-  return controller.entities[lightId];
-}
+import { filters } from '../../esphome-web.json';
 
 function getComponentForEntity(entity) {
   const [type,] = splitEntityTypeAndName(entity.id);
@@ -31,9 +25,33 @@ function getComponentForEntity(entity) {
   return null;
 }
 
+const initializedEntityFilters = filters.map(filter => {
+  if (typeof filter !== 'object') {
+    filter = { type: 'id', value: filter };
+  }
+
+  switch (filter.type) {
+    case 'rx':
+      const rx = RegExp(filter.value);
+      return (entity) => rx.test(entity.id)
+    case 'id':
+      return (entity) => entity.id === filter.value;
+
+  }
+
+  throw new Error('Invalid filter');
+});
+
+function filterEntities(entity) {
+  if (!initializedEntityFilters.length) {
+    return true;
+  }
+  return initializedEntityFilters.some((filter) => filter(entity))
+}
+
 function ControllerCard({controller}) {
-  const entities = controller.entities;
-  const components = Object.values(entities).map(entity => getComponentForEntity(entity)).filter(c => !!c);
+  const entities = Object.values(controller.entities).filter(filterEntities);
+  const components = entities.map(entity => getComponentForEntity(entity)).filter(c => !!c);
 
   return components;
 }
