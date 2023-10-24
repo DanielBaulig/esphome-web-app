@@ -1,4 +1,5 @@
-import { useId, useEffect, useState, useReducer } from 'react';
+import { useId, useEffect, useState, useReducer, lazy, Suspense } from 'react';
+import { splitEntityTypeAndName } from 'esphome-web';
 import ESPHomeWebLightComponent from './components/entities/ESPHomeWebLightComponent';
 import ESPHomeWebEntityCard from './components/ESPHomeWebEntityCard';
 import Spinner from './Spinner';
@@ -17,106 +18,39 @@ function getLightEntity(controller) {
   return controller.entities[lightId];
 }
 
-
-function hexToRGB(hex) {
-  const parts = /^#([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return {
-    r: parseInt(parts[1], 16),
-    g: parseInt(parts[2], 16),
-    b: parseInt(parts[3], 16),
-  };
-}
-
-function useLightEntityReducer(entity) {
-  const controller = entity.controller;
-  const [state, dispatch] = useReducer((state, action) => {
-    let pendingUpdate = false;
-    switch (action.type) {
-      case 'update':
-        return {...state, ...action.state};
-      case 'color': 
-        const rgb = hexToRGB(action.value);
-        entity.turnOn(rgb);
-        return {...state, color: rgb };
-      case 'brightness':
-        if (!state.suspendUpdates) {
-          entity.turnOn({brightness: action.value });
-        } else {
-          pendingUpdate = 'brightness';
-        }
-        return {...state, brightness: action.value, pendingUpdate };
-      case 'colortemp':
-        if (!state.suspendUpdates) {
-          entity.turnOn({color_temp: action.value });
-        } else {
-          pendingUpdate = 'colortemp';
-        }
-        return {...state, color_temp: action.value, pendingUpdate };
-      case 'mousedown':
-        return {...state, suspendUpdates: true, pendingUpdate: false };
-      case 'mouseup':
-        switch (state.pendingUpdate) {
-          case 'brightness':
-            entity.turnOn({brightness: state.brightness});
-            break;
-          case 'colortemp':
-            entity.turnOn({color_temp: state.color_temp});
-            break;
-        }
-        return {...state, suspendUpdates: false, pendingUpdate: false };
-    }
-  }, entity.data);
-  useEffect(() => {
-    const listener = (event) => {
-      if (event.detail.entity.id != entity.id) {
-        return;
-      }
-      dispatch({type: 'update', state: event.detail.entity.data});
-    }
-    controller.addEventListener('entityupdate', listener);
-    return () => controller.removeEventListener('entityupdate', listener)
-  }, [controller, entity]);
-
-  return [state, dispatch];
-}
-
-function rgbToHex(color) {
-  function pad(color) {
-    const hex = color.toString(16)
-    return `${hex.length == 1 ? '0' : ''}{hex}`;
+function getComponentForEntity(entity) {
+  const [type,] = splitEntityTypeAndName(entity.id);
+  switch (type) {
+    case 'light':
+      const ESPHomeWebLightComponent = lazy(() => import('./components/entities/ESPHomeWebLightComponent'));
+      return <Suspense fallback={'Loading...'} key={entity.id}>
+        <ESPHomeWebLightComponent entity={entity} />
+      </Suspense>;
   }
-  if (!('r' in color && 'g' in color && 'b' in color)) {
-    return '#000000';
-  }
-  return `#${color.r.toString(16)}${color.g.toString(16)}${color.b.toString(16)}`;
+
+  return null;
 }
 
 function ControllerCard({controller}) {
-  const entity = getLightEntity(controller);
+  const entities = controller.entities;
+  const components = Object.values(entities).map(entity => getComponentForEntity(entity)).filter(c => !!c);
 
-  return <ESPHomeWebLightComponent 
-    entity={entity}
-  />;
+  return components;
 }
 
-function useControllerReducer(controller) {
+function useController(controller) {
   function pullControllerState() {
     return {
       connected: controller.connected,
       connecting: controller.connecting,
-      discovering: lightId in controller.entities,
     };
   }
 
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
-      case 'discovered':
-        return { ...state, discovered: true };
-      case 'disconnect':
-        controller.disconnect();
+      case 'disconnected':
         return { ...state, ...pullControllerState(), discovered: false };
-      case 'connect':
-        controller.connect();
+      case 'connecting':
         return { ...state, ...pullControllerState() };
       case 'connected':
         return { ...state, ...pullControllerState() };
@@ -128,9 +62,6 @@ function useControllerReducer(controller) {
       dispatch({type: 'connected'});
     }
     const onEntityUpdate = (event) => {
-      if (event.detail.entity.id == lightId) {
-        dispatch({type: 'discovered'});
-      }
     }
     controller.addEventListener('entityupdate', onEntityUpdate);
     controller.addEventListener('connected', onConnected);
@@ -140,29 +71,39 @@ function useControllerReducer(controller) {
     };
   }, [controller]);
 
-  return [state, dispatch];
+  const actions = {
+    connect() {
+      controller.connect();
+      dispatch({ type: 'connecting' });
+    },
+    disconnect() {
+      controller.disconnect();
+      dispatch({ type: 'disconnected' });
+    },
+    toggle() {
+      if (state.connected || state.connecting) {
+        actions.disconnect();
+      } else {
+        actions.connect();
+      }
+    },
+  };
+
+  return [state, actions];
 }
 
 function ControllerListItem({controller, onRemove}) {
-  const [state, dispatch] = useControllerReducer(controller);
+  const [state, actions] = useController(controller);
   let card = null;
   if (state.connecting) {
     card = <Spinner />;
-  } else if (state.discovered) {
-    card = <ControllerCard controller={controller} />;
   } else if (state.connected) {
-    card = <div>Discovering NW660...</div>;
-  }
-  const toggleConnection = () => {
-    if (state.connected || state.connecting) {
-      dispatch({type: 'disconnect'});
-    } else {
-      dispatch({type: 'connect'});
-    }
-  };
+    card = <ControllerCard controller={controller} />;
+  } 
+
   return <li className={listItem}>
     <header>
-      <button className={hostName} onClick={toggleConnection}><h3>{controller.host}</h3></button>
+      <button className={hostName} onClick={() => actions.toggle()}><h3>{controller.host}</h3></button>
       <button onClick={onRemove}>&#x2716;</button>
     </header>
     <div>
@@ -171,10 +112,8 @@ function ControllerListItem({controller, onRemove}) {
   </li>;
 }
 
-function ControllerList({controllers, onRemoveController}) {
+export default function ControllerList({controllers, onRemoveController}) {
   return <ul className={controllerList}>
     {controllers.map(controller => <ControllerListItem controller={controller} key={controller.host} onRemove={() => onRemoveController(controller)} />)}
   </ul>;
 }
-
-export default ControllerList;
