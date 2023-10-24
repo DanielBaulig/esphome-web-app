@@ -1,0 +1,6 @@
+.lightComponent {
+  list-style-type: none;
+  padding: 0;
+  border: 1px dotted gray;
+  background-color: lightsteelblue;
+}

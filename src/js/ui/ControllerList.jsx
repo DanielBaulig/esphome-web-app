@@ -1,6 +1,7 @@
 import { useId, useEffect, useState, useReducer } from 'react';
 import ESPHomeWebLightComponent from './components/entities/ESPHomeWebLightComponent';
 import ESPHomeWebEntityCard from './components/ESPHomeWebEntityCard';
+import Spinner from './Spinner';
 import { 
   controllerList, 
   listItem, 
@@ -92,74 +93,10 @@ function rgbToHex(color) {
 
 function ControllerCard({controller}) {
   const entity = getLightEntity(controller);
-  const [state, dispatch] = useLightEntityReducer(entity);
 
-  // color_temp is given in Mireds
-  const colorTempKelvin = 1000000 / state.color_temp;
-  const brightnessId = useId();
-  const colorTempId = useId();
-  const colorId = useId();
-  
   return <ESPHomeWebLightComponent 
     entity={entity}
-  />
-
-
-  let detailControls = null;
-  if (state.state == 'ON') {
-    detailControls = <>
-      <div className={stateCardSliders}>
-        <label htmlFor={colorId}>Color</label>
-        <input 
-          id={colorId} 
-          type="color" 
-          onChange={
-            (event) => dispatch({type: 'color', value: event.target.value})
-          }
-          value={rgbToHex(state.color)}
-        />
-        <label htmlFor={brightnessId}>Brightness</label>
-        <input 
-          id={brightnessId} 
-          type="range" 
-          min="0" 
-          max="100" 
-          value={state.brightness} 
-          onChange={
-            (event) => dispatch({type: 'brightness', value: event.target.value})
-          } 
-          onMouseDown={() => dispatch({type:'mousedown'})} 
-          onMouseUp={() => dispatch({type: 'mouseup'})} 
-        />
-        <label htmlFor={colorTempId}>Color Temperature</label>
-        <input 
-          id={colorTempId} 
-          type="range" 
-          min="2000" 
-          max="6500" 
-          value={colorTempKelvin} 
-          onChange={(event) => {
-            const colorTempMireds = 1000000 / event.target.value;
-            dispatch(
-              {type: 'colortemp', value: colorTempMireds}
-            )
-          }}
-          onMouseDown={() => dispatch({type: 'mousedown'})}
-          onMouseUp={() => dispatch({type: 'mouseup'})}
-        />
-      </div>
-    </>;
-  }
-  
-  return <div className={stateCard}>
-    <div>{state.state}</div>
-    {detailControls}
-    <div className={stateCardButtons}>
-      <button onClick={() => getLightEntity(controller).turnOn()}>Turn On</button>
-      <button onClick={() => getLightEntity(controller).toggle()}>Toggle</button>
-      <button onClick={() => getLightEntity(controller).turnOff()}>Turn Off</button>
-    </div>
-  </div>;
+  />;
 }
 
 function useControllerReducer(controller) {
@@ -210,9 +147,8 @@ function ControllerListItem({controller, onRemove}) {
   const [state, dispatch] = useControllerReducer(controller);
   let card = null;
   if (state.connecting) {
-    card = <div>Connecting...</div>;
+    card = <Spinner />;
   } else if (state.discovered) {
-    // card = <ControllerCard controller={controller} />;
     card = <ControllerCard controller={controller} />;
   } else if (state.connected) {
     card = <div>Discovering NW660...</div>;
@@ -229,7 +165,9 @@ function ControllerListItem({controller, onRemove}) {
       <button className={hostName} onClick={toggleConnection}><h3>{controller.host}</h3></button>
       <button onClick={onRemove}>&#x2716;</button>
     </header>
-    {card}
+    <div>
+      {card}
+    </div>
   </li>;
 }
 

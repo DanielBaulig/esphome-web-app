@@ -19,15 +19,33 @@
   margin: 0;
 }
 
+.listItem {
+  box-shadow: 2px 2px 4px 2px lightslategray;
+}
+
 .listItem header {
   display: flex;
-  background-color: gray;
+}
+
+.listItem div {
+  display: flex;
+  justify-content: center;
+}
+
+.listItem div > * {
+  flex-basis: 100%;
+}
+
+.listItem header button {
+  background-color: transparent;
+  border: none;
 }
 
 .hostName {
   padding: 0 1rem;
   flex-grow: 1;
   text-align: left;
+  background-color: lightgray;
 }
 
 .hostName h3 {

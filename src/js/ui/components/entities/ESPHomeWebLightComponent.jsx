@@ -2,6 +2,8 @@ import {useReducer, useEffect} from 'react';
 import ESPHomeWebBrightnessInput from './inputs/ESPHomeWebBrightnessInput';
 import ESPHomeWebLightColorComponent from './ESPHomeWebLightColorComponent';
 
+import { lightComponent } from './ESPHomeWebLightComponent.module.css';
+
 function useESPHomeWebEntityState(entity) {
   const [state, dispatch] = useReducer((state, action) => {
     switch(action.type) {
@@ -50,9 +52,9 @@ export default function ESPHomeWebLightComponent({
     </>;
   }
 
-  return <div>
-    {state.state}
-    {controls}
-    {stateControls}
-  </div>;
+  return <ul className={lightComponent}>
+    <li>{state.state}</li>
+    <li>{controls}</li>
+    <li>{stateControls}</li>
+  </ul>;
 }

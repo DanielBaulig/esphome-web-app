@@ -5,7 +5,7 @@ export default function ColorInput({color, label, onChange}) {
   const id = useId();
 
   return <>
-    <label htmlFor="">{label}</label>
+    <label htmlFor={id}>{label}</label>
     <ResponsiveInput 
       id={id}
       value={color}

@@ -1,3 +1,8 @@
 .colorComponent {
+  display: flex; 
+  flex-wrap: wrap;
+}
 
+.colorComponent > * {
+  flex-basis: 100%;
 }

@@ -11,19 +11,13 @@ function kelvinToMireds(kelvin) {
 }
 
 export default function ESPHomeWebColorTemperatureInput({value, onChange}) {
-  const listId = useId();
-
+  const min = 2400;
+  const max = 6500;
 
   return <>
-    <datalist id={listId}>
-      <option value="2700" label="Warm"></option>
-      <option value="3600" label="Cool"></option>
-      <option value="5200" label="Daylight"></option>
-    </datalist>
     <RangeInput
-      list={listId}
-      min="2400" 
-      max="6500" 
+      min={min}
+      max={max}
       value={miredsToKelvin(value)}
       onChange={(value) => onChange(kelvinToMireds(value))}
     />
