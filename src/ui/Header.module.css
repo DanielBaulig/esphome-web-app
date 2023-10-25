@@ -5,11 +5,17 @@
 
 .title {
   flex-grow: 1;
+  font-family: sans-serif;
+  letter-spacing: -1px;
+  font-size: 2rem;
 }
 
 .menu button {
   min-height: 3rem;
   min-width: 3rem;
+  border-radius: 15px;
+  background-color: var(--primary-color);
+  box-shadow: var(--box-shadow);
 } 
 
 .menu button h3 {

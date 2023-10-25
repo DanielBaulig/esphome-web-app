@@ -1,22 +1,22 @@
-import { useId, useEffect, useState, useReducer, lazy, Suspense } from 'react';
+import { forwardRef, useId, useEffect, useState, useReducer, lazy, Suspense, useRef } from 'react';
 import { splitEntityTypeAndName } from 'esphome-web';
 import Spinner from './Spinner';
 import { 
   controllerList, 
   listItem, 
-  stateCard, 
-  stateCardButtons, 
-  stateCardSliders,
-  hostName,
+  header,
+  card,
 } from './ControllerList.module.css';
+import { CSSTransition } from 'react-transition-group';
 
 import { filters } from '../../esphome-web.json';
+
+const ESPHomeWebLightComponent = lazy(() => import('./components/entities/ESPHomeWebLightComponent'));
 
 function getComponentForEntity(entity) {
   const [type,] = splitEntityTypeAndName(entity.id);
   switch (type) {
     case 'light':
-      const ESPHomeWebLightComponent = lazy(() => import('./components/entities/ESPHomeWebLightComponent'));
       return <Suspense fallback={'Loading...'} key={entity.id}>
         <ESPHomeWebLightComponent entity={entity} />
       </Suspense>;
@@ -49,12 +49,41 @@ function filterEntities(entity) {
   return initializedEntityFilters.some((filter) => filter(entity))
 }
 
-function ControllerCard({controller}) {
+function ControllerHeader({host, onToggleController, onRemoveController}) {
+  return <header className={header}>
+    <button onClick={onToggleController}><h3>{host}</h3></button>
+    <button onClick={onRemoveController}>&#x2716;</button>
+  </header>;
+}
+
+function ControllerEntities({controller}) {
+  const [,dispatch] = useReducer((state, action) => {
+    switch(action.type) {
+      case 'update':
+        return {};
+    }
+  }, {})
+  useEffect(() => {
+    function onEntityUpdate() {
+      dispatch({type: 'update'});
+    }
+    controller.addEventListener('entityupdate', onEntityUpdate);
+    return () => {
+      controller.removeEventListener('entityupdate', onEntityUpdate);
+    };
+  }, [controller]);
   const entities = Object.values(controller.entities).filter(filterEntities);
   const components = entities.map(entity => getComponentForEntity(entity)).filter(c => !!c);
+  console.log('render entities', Object.keys(controller.entities));
 
   return components;
 }
+
+const ControllerCard = forwardRef(function ControllerCard({children}, ref) {
+  return <div className={card} ref={ref}>
+    {children}
+  </div>;
+});
 
 function useController(controller) {
   function pullControllerState() {
@@ -112,21 +141,38 @@ function useController(controller) {
 
 function ControllerListItem({controller, onRemove}) {
   const [state, actions] = useController(controller);
-  let card = null;
+  const [showCard, setShowCard] = useState(state.connecting || state.connected);
+  const cardRef = useRef(null);
+
+  let cardContent = null;
   if (state.connecting) {
-    card = <Spinner />;
+    console.log('Render spinner');
+    cardContent = <Spinner />;
   } else if (state.connected) {
-    card = <ControllerCard controller={controller} />;
+    console.log('Render entities');
+    cardContent = <ControllerEntities controller={controller} />;
   } 
 
   return <li className={listItem}>
-    <header>
-      <button className={hostName} onClick={() => actions.toggle()}><h3>{controller.host}</h3></button>
-      <button onClick={onRemove}>&#x2716;</button>
-    </header>
-    <div>
-      {card}
-    </div>
+    <ControllerHeader 
+      host={controller.host}
+      onRemoveController={onRemove}
+      onToggleController={() => {
+        if (showCard) {
+          setShowCard(false);
+        } else {
+          actions.connect();
+          setShowCard(true);
+        }
+      }}
+    />
+    <CSSTransition nodeRef={cardRef} in={showCard} classNames={"fade"} timeout={1000} appear={true} onExited={() => actions.disconnect()}>
+      <ControllerCard ref={cardRef}>
+        <div>
+          {cardContent}
+        </div>
+      </ControllerCard>
+    </CSSTransition>
   </li>;
 }
 

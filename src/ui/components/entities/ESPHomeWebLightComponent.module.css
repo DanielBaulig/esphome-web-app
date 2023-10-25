@@ -1,8 +1,24 @@
+.lightComponent {
+  border-radius: 0 0 12px 12px;
+  margin: 4px;
+}
+
 .lightComponent ul {
   list-style-type: none;
   padding: 0;
-  border: 1px dotted gray;
-  background-color: lightsteelblue;
+}
+
+.lightComponent ul > li {
+  margin: 0 0 16px 0;
+}
+
+.lightComponent ul > li:last-child {
+  margin: 0;
+}
+
+.lightComponent fieldset {
+  border-radius: 0 0 8px 8px;
+  background-color: var(--section-background);
 }
 
 .state {
@@ -23,6 +39,9 @@
 
 .state button {
   flex-grow: 1;
+  background-color: var(--primary-color);
+  border-radius: 8px;
+  min-height: 3rem;
 }
 
 .brightness {
