@@ -1,0 +1,4 @@
+.button {
+  composes: entityCard from '../ESPHomeWebEntityCard.module.css';
+  flex-basis: 1;
+}

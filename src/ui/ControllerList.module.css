@@ -37,10 +37,11 @@
   background-color: var(--card-background);
 }
 
-.card > div {
+.card .content {
   overflow: hidden;
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .card:global(.fade-enter) {

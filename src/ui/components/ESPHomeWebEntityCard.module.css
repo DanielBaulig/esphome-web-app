@@ -1,3 +1,13 @@
 .entityCard {
-  
+  border-radius: 0 0 12px 12px;
+  margin: 4px;
+  flex-grow: 1;
+  display: flex;
+}
+
+.entityCard button {
+  background-color: var(--primary-color);
+  border-radius: 8px;
+  min-height: 3rem;
+  flex-grow: 1;
 }

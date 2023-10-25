@@ -10,7 +10,7 @@ import './main.css';
 
 function sw() {
   if (import.meta.env.DEV) {
-    return 'src/js/sw.js';
+    return 'src/sw.js';
   } else {
     return '/sw.js';
   }

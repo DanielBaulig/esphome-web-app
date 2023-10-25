@@ -1,4 +1,34 @@
 {
   "title": "ESPHome Web",
-  "filters": []
+  "filters": [{
+    "type": "and",
+    "value": [{
+      "type": "state",
+      "entity": "binary_sensor-paired",
+      "value": "OFF"
+    }, {
+      "type": "id",
+      "value": "button-pair_with_closest_device"
+    }]
+  }, {
+    "type": "and",
+    "value": [{
+      "type": "state",
+      "entity": "binary_sensor-paired",
+      "value": "ON"
+    }, {
+      "type": "type",
+      "value": "light"
+    }]
+  }, {
+    "type": "and",
+    "value": [{
+      "type": "state",
+      "entity": "binary_sensor-paired",
+      "value": "ON"
+    }, {
+      "type": "id",
+      "value": "button-reset"
+    }]
+  }]
 }

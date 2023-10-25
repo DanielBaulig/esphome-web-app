@@ -1,6 +1,5 @@
 .lightComponent {
-  border-radius: 0 0 12px 12px;
-  margin: 4px;
+  composes: entityCard from '../ESPHomeWebEntityCard.module.css';
 }
 
 .lightComponent ul {
@@ -35,13 +34,6 @@
   justify-content: center;
   margin: 0;
   flex-basis: 100%;
-}
-
-.state button {
-  flex-grow: 1;
-  background-color: var(--primary-color);
-  border-radius: 8px;
-  min-height: 3rem;
 }
 
 .brightness {

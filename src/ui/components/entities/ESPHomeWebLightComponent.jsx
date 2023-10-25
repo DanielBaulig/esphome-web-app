@@ -2,8 +2,6 @@ import ESPHomeWebBrightnessInput from './inputs/ESPHomeWebBrightnessInput';
 import ESPHomeWebLightColorComponent from './ESPHomeWebLightColorComponent';
 import useESPHomeWebEntityState from './useESPHomeWebEntityState';
 
-import { splitEntityTypeAndName } from 'esphome-web';
-
 import { 
   lightComponent, 
   brightness, 
@@ -44,10 +42,8 @@ export default function ESPHomeWebLightComponent({
     </>;
   }
 
-  const [,id] = splitEntityTypeAndName(state.id);
-
   return <fieldset className={lightComponent}>
-    <legend>{state.name || id}</legend>
+    <legend>{state.name || entity.slug}</legend>
     <ul>
       <li>
         <fieldset className={stateClass}>
