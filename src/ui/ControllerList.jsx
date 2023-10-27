@@ -14,6 +14,7 @@ import { filters } from '../../esphome-web.json';
 const ESPHomeWebLightComponent = lazy(() => import('./components/entities/ESPHomeWebLightComponent'));
 const ESPHomeWebBinarySensorEntity= lazy(() => import('./components/entities/ESPHomeWebBinarySensorEntity'));
 const ESPHomeWebButtonEntity= lazy(() => import('./components/entities/ESPHomeWebButtonEntity'));
+const ESPHomeWebSelectEntity= lazy(() => import('./components/entities/ESPHomeWebSelectEntity'));
 
 function getComponentForEntity(entity) {
   const loading = 'Loading...';
@@ -29,6 +30,10 @@ function getComponentForEntity(entity) {
     case 'button':
       return <Suspense fallback={loading} key={entity.id}>
         <ESPHomeWebButtonEntity entity={entity} />
+      </Suspense>;
+    case 'select':
+      return <Suspense fallback={loading} key={entity.id}>
+        <ESPHomeWebSelectEntity entity={entity} />
       </Suspense>;
   }
 
@@ -80,13 +85,13 @@ function ControllerHeader({host, onToggleController, onRemoveController}) {
   </header>;
 }
 
-const ControllerEntities = memo(function ControllerEntities({entities}) {
+function ControllerEntities({entities}) {
   console.log('render entities', entities);
   const components = entities.map(entity => getComponentForEntity(entity)).filter(c => !!c);
+  console.log('components', components);
 
   return components;
-  // Maybe we should just always re-render?
-}, (a, b) => JSON.stringify(a.entities) === JSON.stringify(b.entities));
+};
 
 const ControllerCard = forwardRef(function ControllerCard({children}, ref) {
   return <div className={card} ref={ref}>

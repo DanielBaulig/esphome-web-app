@@ -1,9 +1,10 @@
 .binarySensor {
   composes: entityCard from '../ESPHomeWebEntityCard.module.css';
-  flex-basis: 1;
+  flex-basis: 1%;
 }
 
 .binarySensor h3 {
   display: flex;
   justify-content: center;
+  flex-grow: 1;
 }
