@@ -5,6 +5,7 @@
 .lightComponent ul {
   list-style-type: none;
   padding: 0;
+  flex-grow: 1;
 }
 
 .lightComponent ul > li {
