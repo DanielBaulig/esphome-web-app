@@ -1,7 +1,0 @@
-.select {
-  composes: entityCard from '../ESPHomeWebEntityCard.module.css';
-}
-
-.select select {
-  flex-grow: 1;
-}

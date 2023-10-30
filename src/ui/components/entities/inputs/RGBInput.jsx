@@ -17,7 +17,7 @@ function rgbToHex(red, green, blue) {
   return `#${colors.join('')}`;
 }
 
-export default function ESPHomeWebRGBInput({red, green, blue, onChange}) {
+export default function RGBInput({red, green, blue, onChange}) {
   const hex = rgbToHex(red, green, blue);
 
   return <ColorInput 

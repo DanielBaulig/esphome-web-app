@@ -1,6 +1,6 @@
 import RangeInput from './RangeInput';
 
-export default function ESPHomeWebBrightnessInput({value, onChange}) {
+export default function BrightnessInput({value, onChange}) {
   return <RangeInput
     min="0" 
     max="255" 

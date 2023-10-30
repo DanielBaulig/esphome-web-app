@@ -1,6 +1,6 @@
 import {useReducer, useEffect} from 'react';
 
-export default function useESPHomeWebEntityState(entity) {
+export default function useEntityState(entity) {
   const [state, dispatch] = useReducer((state, action) => {
     switch(action.type) {
       case 'update': 

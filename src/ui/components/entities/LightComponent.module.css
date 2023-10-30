@@ -1,5 +1,5 @@
 .lightComponent {
-  composes: entityCard from '../ESPHomeWebEntityCard.module.css';
+  composes: entityCard from '../EntityCard.module.css';
 }
 
 .lightComponent ul {

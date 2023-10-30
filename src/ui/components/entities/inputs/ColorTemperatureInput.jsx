@@ -10,7 +10,7 @@ function kelvinToMireds(kelvin) {
   return 1000000 / kelvin;
 }
 
-export default function ESPHomeWebColorTemperatureInput({value, onChange}) {
+export default function ColorTemperatureInput({value, onChange}) {
   const min = 2400;
   const max = 6500;
 

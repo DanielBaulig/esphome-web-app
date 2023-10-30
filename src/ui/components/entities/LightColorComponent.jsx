@@ -1,16 +1,16 @@
 import {useState} from 'react';
 
-import { colorComponent } from './ESPHomeWebLightColorComponent.module.css';
+import { colorComponent } from './LightColorComponent.module.css';
 
-import ESPHomeWebColorModeInput from './inputs/ESPHomeWebColorModeInput';
-import ESPHomeWebRGBInput from './inputs/ESPHomeWebRGBInput';
-import ESPHomeWebColorTemperatureInput from './inputs/ESPHomeWebColorTemperatureInput';
+import ColorModeInput from './inputs/ColorModeInput';
+import RGBInput from './inputs/RGBInput';
+import ColorTemperatureInput from './inputs/ColorTemperatureInput';
 
-export default function ESPHomeWebLightColorComponent({colorMode, color, colorTemp, onTurnOn}) {
+export default function LightColorComponent({colorMode, color, colorTemp, onTurnOn}) {
   const [currentColorMode, setColorMode] = useState(colorMode);
   let colorControl = null;
   if (currentColorMode === 'rgb') {
-    colorControl = <ESPHomeWebRGBInput 
+    colorControl = <RGBInput 
       red={color.r || 0} 
       green={color.g || 0} 
       blue={color.b || 0} 
@@ -18,7 +18,7 @@ export default function ESPHomeWebLightColorComponent({colorMode, color, colorTe
     />;
   }
   if (currentColorMode === 'color_temp') {
-    colorControl = <ESPHomeWebColorTemperatureInput 
+    colorControl = <ColorTemperatureInput 
       value={colorTemp || 2400}
       onChange={value => onTurnOn({color_temp: value})}
     />;
@@ -26,7 +26,7 @@ export default function ESPHomeWebLightColorComponent({colorMode, color, colorTe
 
   return <fieldset className={colorComponent}>
     <legend>Color:
-      <ESPHomeWebColorModeInput colorMode={colorMode} onChange={(v) => {
+      <ColorModeInput colorMode={colorMode} onChange={(v) => {
         console.log('Color Mode', v);
         setColorMode(v)
       }}/>

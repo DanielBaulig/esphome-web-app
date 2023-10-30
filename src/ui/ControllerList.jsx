@@ -11,29 +11,29 @@ import { CSSTransition } from 'react-transition-group';
 
 import { filters } from '../../esphome-web.json';
 
-const ESPHomeWebLightComponent = lazy(() => import('./components/entities/ESPHomeWebLightComponent'));
-const ESPHomeWebBinarySensorEntity= lazy(() => import('./components/entities/ESPHomeWebBinarySensorEntity'));
-const ESPHomeWebButtonEntity= lazy(() => import('./components/entities/ESPHomeWebButtonEntity'));
-const ESPHomeWebSelectEntity= lazy(() => import('./components/entities/ESPHomeWebSelectEntity'));
+const LightComponent = lazy(() => import('./components/entities/LightComponent'));
+const BinarySensorEntity= lazy(() => import('./components/entities/BinarySensorEntity'));
+const ButtonEntity= lazy(() => import('./components/entities/ButtonEntity'));
+const SelectEntity= lazy(() => import('./components/entities/SelectEntity'));
 
 function getComponentForEntity(entity) {
   const loading = 'Loading...';
   switch (entity.type) {
     case 'light':
       return <Suspense fallback={loading} key={entity.id}>
-        <ESPHomeWebLightComponent entity={entity} />
+        <LightComponent entity={entity} />
       </Suspense>;
     case 'binary_sensor':
       return <Suspense fallback={loading} key={entity.id}>
-        <ESPHomeWebBinarySensorEntity entity={entity} />
+        <BinarySensorEntity entity={entity} />
       </Suspense>;
     case 'button':
       return <Suspense fallback={loading} key={entity.id}>
-        <ESPHomeWebButtonEntity entity={entity} />
+        <ButtonEntity entity={entity} />
       </Suspense>;
     case 'select':
       return <Suspense fallback={loading} key={entity.id}>
-        <ESPHomeWebSelectEntity entity={entity} />
+        <SelectEntity entity={entity} />
       </Suspense>;
   }
 

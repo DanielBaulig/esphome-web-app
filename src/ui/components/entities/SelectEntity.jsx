@@ -1,10 +1,10 @@
 
-import useESPHomeWebEntityState from './useESPHomeWebEntityState';
+import useEntityState from './useEntityState';
 
-import { select } from './ESPHomeWebSelectEntity.module.css';
+import { select } from './SelectEntity.module.css';
 
-export default function ESPHomeWebSelectEntity({entity}) {
-  const state = useESPHomeWebEntityState(entity);
+export default function SelectEntity({entity}) {
+  const state = useEntityState(entity);
 
   return <fieldset className={select}>
     <legend>{state.name || entity.slug}</legend>

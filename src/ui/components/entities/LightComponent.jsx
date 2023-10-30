@@ -1,17 +1,17 @@
-import ESPHomeWebBrightnessInput from './inputs/ESPHomeWebBrightnessInput';
-import ESPHomeWebLightColorComponent from './ESPHomeWebLightColorComponent';
-import useESPHomeWebEntityState from './useESPHomeWebEntityState';
+import BrightnessInput from './inputs/BrightnessInput';
+import LightColorComponent from './LightColorComponent';
+import useEntityState from './useEntityState';
 
 import { 
   lightComponent, 
   brightness, 
   state as stateClass 
-} from './ESPHomeWebLightComponent.module.css';
+} from './LightComponent.module.css';
 
-export default function ESPHomeWebLightComponent({
+export default function LightComponent({
   entity,
 }) {
-  const state = useESPHomeWebEntityState(entity);
+  const state = useEntityState(entity);
 
   const buttons = <>
     <button onClick={() => entity.turnOn()}>Turn on</button>
@@ -23,7 +23,7 @@ export default function ESPHomeWebLightComponent({
   if (state.state === 'ON') {
     controls = <>
       <li>
-        <ESPHomeWebLightColorComponent 
+        <LightColorComponent 
           colorMode={state.color_mode} 
           colorTemp={state.color_temp} 
           color={state.color} 
@@ -33,7 +33,7 @@ export default function ESPHomeWebLightComponent({
       <li>
         <fieldset className={brightness}>
           <legend>Brightness</legend>
-          <ESPHomeWebBrightnessInput 
+          <BrightnessInput 
             value={state.brightness} 
             onChange={value => entity.turnOn({brightness: value})}
           />

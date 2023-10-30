@@ -1,0 +1,4 @@
+.button {
+  composes: entityCard from '../EntityCard.module.css';
+  flex-basis: 1;
+}
