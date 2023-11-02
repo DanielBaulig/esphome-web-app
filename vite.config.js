@@ -23,4 +23,9 @@ export default defineConfig({
     },
   },
   publicDir: "./static",
+  server: {
+    headers: {
+      'Content-Security-Policy': 'treat-as-public-address',
+    },
+  },
 });

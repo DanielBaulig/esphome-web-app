@@ -1,11 +1,15 @@
 async function cacheResources(resources) {
   const cache = await caches.open('v1');
-  console.debug('Caching Resources', resources);
+  console.debug('SW: Caching Resources', resources);
   await cache.addAll(resources);
 }
 
+async function tryPrivate() {
+  const response = fetch('http://neewer-controller-9c58d8.local/', { targetAddressSpace: 'private' });
+  console.log('SW: Trying local fetch', response);
+}
+
 async function serveFromCache(request) {
-  const response = fetch('http://neewer-controller-9c58d8.local/');
   const cachedResponse = await caches.match(request);
   console.debug('Looking for request in cache', request);
   if (cachedResponse) {
@@ -13,7 +17,7 @@ async function serveFromCache(request) {
     return cachedResponse;
   }
 
-  console.debug('Forwarding request', request);
+  console.debug('SW: Forward request', request);
   return await fetch(request);
 }
 
@@ -24,6 +28,7 @@ async function fetchManifest() {
 
 async function cacheManifestResources() {
   if (import.meta.env.DEV) {
+    console.log('SW: Skipping precaching resources in DEV');
     return Promise.resolve();
   }
   const manifest = await fetchManifest();
@@ -32,7 +37,7 @@ async function cacheManifestResources() {
 }
 
 self.addEventListener("install", event => {
-  console.debug('Worker installed');
+  console.debug('SW: installed');
   event.waitUntil(Promise.all([cacheManifestResources(), cacheResources([
     '/index.html',
     '/icons/256.png',
@@ -40,16 +45,17 @@ self.addEventListener("install", event => {
 });
 
 self.addEventListener('activate', event => {
-  console.debug('Worker activated');
+  console.debug('SW: activated');
+  tryPrivate();
 });
 
 self.addEventListener('fetch', (event) => {
   const request = event.request;
-  console.debug('Worker fetch', request);
+  console.debug('SW: fetch', request);
   // Avoid handling CORS requests to ESP32
   if (request.mode == 'cors' && !request.url.startsWith(location.origin)) {
-    console.debug('Skipping CORS request', request);
-    return;
+    console.debug('SW: Skipping CORS request', request);
+    return false;
   }
   return event.respondWith(serveFromCache(event.request));
 });
