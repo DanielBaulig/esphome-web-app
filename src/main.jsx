@@ -1,3 +1,4 @@
+import EventSource from './FetchEventSource';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import ControllerList from './ui/ControllerList.jsx';
