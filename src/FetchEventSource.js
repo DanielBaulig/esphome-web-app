@@ -35,9 +35,12 @@ export default class EventSource extends EventTarget {
     this._allowCors = false;
     this._abortController = new AbortController();
     const { signal } = this._abortController;
+    const targetAddressSpace = globalThis.isSecureContext ? {
+      targetAddressSpace: 'private',
+    } : {};
     this._fetchOptions = Object.assign({
       signal,
-    }, fetchOptions);
+    }, fetchOptions, targetAddressSpace);
     this._url = url;
     this._lastEventId = '';
     this._retryTimeout = 30000;
