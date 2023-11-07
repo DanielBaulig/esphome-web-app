@@ -84,7 +84,6 @@ export default class EventSource extends EventTarget {
     const data = dataField.length > 0 ? dataField.join('\n') : null;
     const lastEventId = this._lastEventId;
     const messageEvent = new MessageEvent(message.event, {data, lastEventId});
-    console.log(messageEvent);
     this.dispatchEvent(messageEvent);
   }
 
@@ -115,13 +114,11 @@ export default class EventSource extends EventTarget {
 
         const normalized = value.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 
-        console.log('value', normalized);
         if (!normalized.endsWith('\n')) {
           console.warn('Message wasn\'t terminated by a newline character');
           continue;
         }
         const lines = normalized.substr(0, normalized.length  - 1).split('\n');
-        console.log('lines', lines);
 
         lines.forEach((value) => {
           if (isComment(value)) {

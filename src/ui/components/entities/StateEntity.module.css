@@ -1,9 +1,9 @@
-.binarySensor {
+.stateEntity {
   composes: entityCard from '../EntityCard.module.css';
   flex-basis: 1%;
 }
 
-.binarySensor h3 {
+.stateEntity h3 {
   display: flex;
   justify-content: center;
   flex-grow: 1;

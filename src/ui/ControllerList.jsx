@@ -1,5 +1,6 @@
 import { memo, forwardRef, useId, useEffect, useState, useReducer, lazy, Suspense, useRef } from 'react';
 import Spinner from './Spinner';
+import StateEntity from './components/entities/StateEntity';
 import { 
   controllerList, 
   listItem, 
@@ -35,6 +36,8 @@ function getComponentForEntity(entity) {
       return <Suspense fallback={loading} key={entity.id}>
         <SelectEntity entity={entity} />
       </Suspense>;
+    default:
+      return <StateEntity entity={entity} />
   }
 
   return null;
@@ -86,9 +89,7 @@ function ControllerHeader({host, onToggleController, onRemoveController}) {
 }
 
 function ControllerEntities({entities}) {
-  console.log('render entities', entities);
   const components = entities.map(entity => getComponentForEntity(entity)).filter(c => !!c);
-  console.log('components', components);
 
   return components;
 };
@@ -163,10 +164,9 @@ function useController(controller) {
 
 function ControllerListItem({controller, onRemove}) {
   const [state, actions] = useController(controller);
-  const [showCard, setShowCard] = useState(state.connecting || state.connected);
+  const [isCardVisible, setShowCard] = useState(state.connecting || state.connected);
   const cardRef = useRef(null);
 
-  console.log('render');
   let cardContent = <Spinner />;
   if (state.connected && state.entities.length > 0) {
     cardContent = <ControllerEntities entities={state.entities} />;
@@ -177,20 +177,19 @@ function ControllerListItem({controller, onRemove}) {
       host={controller.host}
       onRemoveController={onRemove}
       onToggleController={() => {
-        if (showCard) {
-          console.log('hide card');
-          setShowCard(false);
-        } else {
-          console.log('show card');
-          setShowCard(true);
+        if (!isCardVisible) {
           actions.connect();
         }
+        setShowCard(!isCardVisible);
       }}
     />
     <CSSTransition 
       nodeRef={cardRef} 
-      in={showCard} 
+      in={isCardVisible} 
       classNames={"fade"} 
+      addEndListener={(done) => {
+        cardRef.current.addEventListener('transitionend', done, false);
+      }}
       timeout={1000} 
       appear={true} 
       onExited={() => actions.disconnect()}
