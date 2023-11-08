@@ -63,7 +63,8 @@ self.addEventListener("install", event => {
 });
 
 self.addEventListener('activate', event => {
-  console.debug('SW: activated NOW LOL');
+  console.debug('SW: activated');
+  return self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
@@ -72,6 +73,11 @@ self.addEventListener('fetch', (event) => {
   // Avoid handling CORS requests to ESP32
   if (request.mode == 'cors' && !request.url.startsWith(location.origin)) {
     console.debug('SW: Skipping CORS request', request);
+    return false;
+  }
+  // Avoid handling chrome-extension requests
+  if (request.url.startsWith('chrome-extension')) {
+    console.debug('SW: Skipping chrome-extension request', request);
     return false;
   }
   return event.respondWith(fetchFromCacheFirst(event.request));
