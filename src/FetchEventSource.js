@@ -64,7 +64,11 @@ export default class EventSource extends EventTarget {
   #connect() {
     this.#cancelRetry();
     this.readyState = READYSTATE_CONNECTING;
-    fetch(this.#url, { ...this.#fetchOptions, headers: this.#getFetchHeaders()}).then(this.#onResponse, this.#onFetchError);
+    try {
+      fetch(this.#url, { ...this.#fetchOptions, headers: this.#getFetchHeaders()}).then(this.#onResponse, this.#onFetchError);
+    } catch(e) {
+      console.error('catch fetch', e);
+    }
   }
 
   close() {
@@ -99,6 +103,7 @@ export default class EventSource extends EventTarget {
   }
 
   #onFetchError = (e) => {
+    console.error('onFetchError', e);
     if (e.name === 'AbortError') {
       return this.#closeConnection();
     }
