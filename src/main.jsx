@@ -18,7 +18,7 @@ function sw() {
 }
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register(sw(), { type: 'module' }).then((registration) => {
+  navigator.serviceWorker.register(sw(), { scope: '/', type: 'module' }).then((registration) => {
     console.log(`Registration succesful ${registration}`);
   });
 } else console.warn('ServiceWorker not supported');

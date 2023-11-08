@@ -1,24 +1,42 @@
 async function cacheResources(resources) {
   const cache = await caches.open('v1');
-  console.debug('SW: Caching Resources', resources);
   await cache.addAll(resources);
 }
 
-async function tryPrivate() {
-  const response = fetch('http://neewer-controller-9c58d8.local/', { targetAddressSpace: 'private' });
-  console.log('SW: Trying local fetch', response);
-}
-
-async function serveFromCache(request) {
-  const cachedResponse = await caches.match(request);
-  console.debug('Looking for request in cache', request);
+async function fetchFromCacheFirst(request) {
+  const cachedResponse = await fetchFromCache(request);
   if (cachedResponse) {
-    console.debug('Found in cache', request, cachedResponse);
+    console.log('cache hit', cachedResponse);
     return cachedResponse;
   }
 
-  console.debug('SW: Forward request', request);
-  return await fetch(request);
+  return await fetchFromNetworkAndCache(request);
+}
+
+async function fetchFromNetworkFirst(request) {
+  try {
+    return fetchFromNetworkAndCache(request);
+  } catch(e) {
+    return fetchFromCache(request);
+  }
+}
+
+async function fetchFromNetwork(request) {
+  return fetch(request);
+}
+
+async function fetchFromNetworkAndCache(request) {
+  const response = await fetchFromNetwork(request);
+  if (response.ok) {
+    const cache = await caches.open('v1');
+    cache.put(request, response.clone());
+    return response;
+  }
+  return response;
+}
+
+async function fetchFromCache(request) {
+  return caches.match(request);
 }
 
 async function fetchManifest() {
@@ -45,8 +63,7 @@ self.addEventListener("install", event => {
 });
 
 self.addEventListener('activate', event => {
-  console.debug('SW: activated');
-  tryPrivate();
+  console.debug('SW: activated NOW LOL');
 });
 
 self.addEventListener('fetch', (event) => {
@@ -57,5 +74,5 @@ self.addEventListener('fetch', (event) => {
     console.debug('SW: Skipping CORS request', request);
     return false;
   }
-  return event.respondWith(serveFromCache(event.request));
+  return event.respondWith(fetchFromCacheFirst(event.request));
 });
