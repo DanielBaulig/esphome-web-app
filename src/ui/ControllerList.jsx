@@ -113,11 +113,13 @@ function useController(controller) {
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case 'disconnected':
-        return { ...state, ...pullControllerState(controller) };
+        return { ...state, ...pullControllerState(controller), error: false };
       case 'connecting':
         return { ...state, ...pullControllerState(controller) };
       case 'connected':
         return { ...state, ...pullControllerState(controller) };
+      case 'error':
+        return { ...state, error: true };
       case 'entitydiscovered':
         return { ...state, ...pullControllerState(controller) }
       // TODO: Right now this does not cover updates to entities themselves.
@@ -129,15 +131,20 @@ function useController(controller) {
   useEffect(() => {
     const onConnected = () => {
       dispatch({type: 'connected'});
-    }
+    };
     const onEntityDiscovered = (event) => {
       dispatch({type: 'entitydiscovered'});
-    }
+    };
+    const onError = (event) => {
+      dispatch({type: 'error'});
+    };
     controller.addEventListener('entitydiscovered', onEntityDiscovered);
     controller.addEventListener('connected', onConnected);
+    controller.addEventListener('error', onError);
     return () => {
       controller.removeEventListener('connected', onConnected);
       controller.removeEventListener('entitydiscovered', onEntityDiscovered);
+      controller.removeEventListener('error', onError);
     };
   }, [controller]);
 
@@ -170,6 +177,9 @@ function ControllerListItem({controller, onRemove}) {
   let cardContent = <Spinner />;
   if (state.connected && state.entities.length > 0) {
     cardContent = <ControllerEntities entities={state.entities} />;
+  }
+  if (state.error) {
+    cardContent = <h3>⚠ Something went wrong</h3>;
   }
 
   return <li className={listItem}>

@@ -30,77 +30,103 @@ const READYSTATE_OPEN = 1;
 const READYSTATE_CLOSED = 2;
 
 export default class EventSource extends EventTarget {
+  #preventCors = true;
+  #abortController = new AbortController();
+  #fetchOptions;
+  #url;
+  #lastEventId = '';
+  #retryTimeout = 5000;
+  #retryRef = 0;
+
   constructor(url, {fetchOptions} = {}) {
     super();
-    this._allowCors = false;
-    this._abortController = new AbortController();
-    const { signal } = this._abortController;
+    const { signal } = this.#abortController;
     const targetAddressSpace = globalThis.isSecureContext ? {
       targetAddressSpace: 'private',
     } : {};
-    this._fetchOptions = Object.assign({
+    this.#fetchOptions = Object.assign({
       signal,
     }, fetchOptions, targetAddressSpace);
-    this._url = url;
-    this._lastEventId = '';
-    this._retryTimeout = 30000;
-    this._connect();
+    this.#url = url;
+    this.#connect();
   }
 
-  _getFetchHeaders() {
-    if (this._allowCors) {
+  #getFetchHeaders() {
+    if (!this.#preventCors) {
       return {
-        'Last-Event-ID': this._lastEventId,
+        'Last-Event-ID': this.#lastEventId,
         'Accept': 'text/event-stream',
       };
     } 
     return {};
   }
 
-  _connect() {
+  #connect() {
+    this.#cancelRetry();
     this.readyState = READYSTATE_CONNECTING;
-    fetch(this._url, { ...this._fetchOptions, headers: this._getFetchHeaders()}).then(this._onResponse, this._onError);
+    fetch(this.#url, { ...this.#fetchOptions, headers: this.#getFetchHeaders()}).then(this.#onResponse, this.#onFetchError);
   }
 
   close() {
-    this._abortController.abort();
+    this.#abortController.abort();
+    this.#cancelRetry();
   }
 
-  _onError = (e) => {
-    if (e.name === 'AbortError') {
-      this.readyState = READYSTATE_CLOSED;
+  #cancelRetry() {
+    if (!this.#retryRef) {
       return;
     }
-    console.error(e);
-    this.dispatchEvent(new Event('error'));
-    setTimeout(this._retryTimeout, () => {
-      this._connect();
-    });
+    clearTimeout(this.#retryRef);
+    this.#retryRef = 0;
+  }
+  #retryConnection() {
+    this.#cancelRetry();
+    console.log('retry connection');
+    this.#retryRef = setTimeout(() => {
+      this.#connect();
+    }, this.#retryTimeout);
     this.readyState = READYSTATE_CONNECTING;
   }
 
-  _onMessageComplete(message) {
+  #closeConnection() {
+    this.#cancelRetry();
+    this.readyState = READYSTATE_CLOSED;
+  }
+
+  #failConnection() {
+    this.#closeConnection();
+    this.dispatchEvent(new Event('error'));
+  }
+
+  #onFetchError = (e) => {
+    if (e.name === 'AbortError') {
+      return this.#closeConnection();
+    }
+    this.#failConnection();
+  }
+
+  #onMessageComplete(message) {
     const dataField = message.data;
     const data = dataField.length > 0 ? dataField.join('\n') : null;
-    const lastEventId = this._lastEventId;
+    const lastEventId = this.#lastEventId;
     const messageEvent = new MessageEvent(message.event, {data, lastEventId});
     this.dispatchEvent(messageEvent);
   }
 
-  _onConnected = () => {
+  #onConnected = () => {
     this.readyState = READYSTATE_OPEN;
     this.dispatchEvent(new Event('open'));
   }
 
-  _onResponse = async (response) => {
+  #onResponse = async (response) => {
     if (!response.ok) {
-      return this._onError(response);
+      return this.#failConnection();
     }
 
-    this._onConnected();
+    this.#onConnected();
     
     try {
-      const stream = await response.body;
+      const stream = response.body;
       const textStream = stream.pipeThrough(new TextDecoderStream());
       const reader = textStream.getReader();
 
@@ -133,10 +159,10 @@ export default class EventSource extends EventTarget {
                 message.data.push(fieldValue);
                 break;
               case 'id':
-                this._lastEventId = fieldValue;
+                this.#lastEventId = fieldValue;
                 break;
               case 'retry':
-                this._retryTimeout = parseInt(fieldValue);
+                this.#retryTimeout = parseInt(fieldValue);
                 break;
               case 'event':
                 message.event  = fieldValue;
@@ -146,14 +172,16 @@ export default class EventSource extends EventTarget {
           }
 
           if (isTermination(value)) {
-            this._onMessageComplete(message);
+            this.#onMessageComplete(message);
             message = createMessage();
             return;
           }
         });
       } while(true);
+      // Only exits out of while loop if end of stream was reached.
+      this.#retryConnection();
     } catch(e) {
-      this._onError(e);
+      this.#retryConnection();
     }
   }
 }
