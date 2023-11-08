@@ -41,10 +41,18 @@ function removeHost(host) {
   renderRoot();
 }
 
+function promptAndRegisterHost() {
+  const host = prompt('Host');
+  if (host === null) {
+    return;
+  }
+  registerHost(host);
+}
+
 function renderRoot() {
   reactRoot.render(
     <>
-      <Header onAddController={() => registerHost(prompt('Host'))}/>
+      <Header onAddController={() => promptAndRegisterHost()}/>
       <main>
         <ControllerList controllers={getRegisteredControllers()} onRemoveController={controller => removeHost(controller.host)} />
       </main>
