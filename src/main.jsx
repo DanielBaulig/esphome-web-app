@@ -17,7 +17,7 @@ function sw() {
   }
 }
 
-if ("serviceWorker" in navigator) {
+if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register(sw(), { scope: '/', type: 'module' }).then((registration) => {
     console.log(`Registration succesful ${registration}`);
   });
