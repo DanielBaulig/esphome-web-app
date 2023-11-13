@@ -156,15 +156,17 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', (event) => {
   const request = event.request;
-  return event.respondWith(fetch(request));
 
   // Avoid handling requests not going to origin
   if (!request.url.startsWith(location.origin)) {
     console.debug('Bypassing request to different origin', request);
     return false;
   }
+  
+  return event.respondWith(fetch(request));
 
   if (request.mode === 'navigate') {
+    console.log('Navigate request');
     // We want to make sure we update the app resource cache if 
     // we get a main resource navigation (i.e. we are loading the app)..
     const createNavigateResponse = async () => {
