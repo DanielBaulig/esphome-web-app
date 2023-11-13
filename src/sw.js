@@ -155,6 +155,7 @@ self.addEventListener('activate', event => {
 // });
 
 self.addEventListener('fetch', (event) => {
+  return;
   const request = event.request;
 
   // Avoid handling requests not going to origin
