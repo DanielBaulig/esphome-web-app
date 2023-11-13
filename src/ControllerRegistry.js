@@ -1,5 +1,9 @@
 import { ESPHomeWebController } from 'esphome-web';
 
+function createController(host) {
+  return new ESPHomeWebController(host, { targetAddressSpace: 'private' });
+}
+
 class ControllerRegistry {
   constructor(storageKey = "controllers") {
     this.storageKey = storageKey;
@@ -14,7 +18,7 @@ class ControllerRegistry {
     }
     this.hosts.forEach(host => {
       if (!(host in this.controllers)) {
-        this.controllers[host] = new ESPHomeWebController(host);
+        this.controllers[host] = createController(host);
       }
     });
   }
@@ -28,7 +32,7 @@ class ControllerRegistry {
       return;
     }
     this.hosts.push(host);
-    this.controllers[host] = new ESPHomeWebController(host);
+    this.controllers[host] = createController(host);
     this._flush();
   }
 
