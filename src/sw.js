@@ -155,8 +155,8 @@ self.addEventListener('activate', event => {
 // });
 
 self.addEventListener('fetch', (event) => {
-  return;
   const request = event.request;
+  return event.respondWith(fetch(request));
 
   // Avoid handling requests not going to origin
   if (!request.url.startsWith(location.origin)) {
