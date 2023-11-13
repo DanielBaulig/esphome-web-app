@@ -12,13 +12,19 @@ import { CSSTransition } from 'react-transition-group';
 
 import { filters } from '../../esphome-web.json';
 
+function delay(ms) {
+  return new Promise((resolve, reject) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 const LightComponent = lazy(() => import('./components/entities/LightComponent'));
-const BinarySensorEntity= lazy(() => import('./components/entities/BinarySensorEntity'));
-const ButtonEntity= lazy(() => import('./components/entities/ButtonEntity'));
-const SelectEntity= lazy(() => import('./components/entities/SelectEntity'));
+const BinarySensorEntity = lazy(() => import('./components/entities/BinarySensorEntity'));
+const ButtonEntity = lazy(() => import('./components/entities/ButtonEntity'));
+const SelectEntity = lazy(() => import('./components/entities/SelectEntity'));
 
 function getComponentForEntity(entity) {
-  const loading = 'Loading...';
+  const loading = <Spinner />;
   switch (entity.type) {
     case 'light':
       return <Suspense fallback={loading} key={entity.id}>
@@ -37,7 +43,7 @@ function getComponentForEntity(entity) {
         <SelectEntity entity={entity} />
       </Suspense>;
     default:
-      return <StateEntity entity={entity} />
+      return <StateEntity entity={entity} key={entity.id} />
   }
 
   return null;
@@ -108,7 +114,6 @@ function pullControllerState(controller) {
   };
 }
 
-
 function useController(controller) {
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
@@ -123,8 +128,8 @@ function useController(controller) {
       case 'entitydiscovered':
         return { ...state, ...pullControllerState(controller) }
       // TODO: Right now this does not cover updates to entities themselves.
-      // However, state filters might actually require a re-render when entity
-      // state itself changes.
+      // However, state filters might actually require a re-render when 
+      // entity state itself changes.
     }
   }, { ...pullControllerState(controller) });
 

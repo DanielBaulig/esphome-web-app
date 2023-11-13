@@ -79,6 +79,7 @@ export default class EventSource extends EventTarget {
     clearTimeout(this.#retryRef);
     this.#retryRef = 0;
   }
+
   #retryConnection() {
     this.#cancelRetry();
     console.log('retry connection');
@@ -178,9 +179,13 @@ export default class EventSource extends EventTarget {
           }
         });
       } while(true);
+      console.log('Reached end of stream');
       // Only exits out of while loop if end of stream was reached.
       this.#retryConnection();
     } catch(e) {
+      if (e.name === 'AbortError') {
+        return this.#closeConnection();
+      }
       this.#retryConnection();
     }
   }

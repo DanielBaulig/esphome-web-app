@@ -159,6 +159,7 @@ self.addEventListener('fetch', (event) => {
 
   // Avoid handling requests not going to origin
   if (!request.url.startsWith(location.origin)) {
+    console.debug('Bypassing request to different origin', request);
     return false;
   }
 
