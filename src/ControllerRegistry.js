@@ -29,11 +29,12 @@ class ControllerRegistry {
 
   registerHost(host) {
     if (this.hosts.includes(host)) {
-      return;
+      return this.controllers[host];
     }
     this.hosts.push(host);
     this.controllers[host] = createController(host);
     this._flush();
+    return this.controllers[host];
   }
 
   removeHost(host) {

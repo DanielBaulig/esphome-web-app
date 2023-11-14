@@ -154,17 +154,25 @@ self.addEventListener('activate', event => {
 //   }
 // });
 
+async function postMessage(clientId, message) {
+  const client = await clients.get(clientId);
+  client.postMessage(message);
+}
+
 self.addEventListener('fetch', (event) => {
   const request = event.request;
 
   // Avoid handling requests not going to origin
   if (!request.url.startsWith(location.origin)) {
     console.debug('Bypassing request to different origin', request);
+
+    if (request.targetAddressSpace === 'private') {
+      postMessage(event.clientId, 'pna_confirm');
+    }
+
     return false;
   }
   
-  return event.respondWith(fetch(request));
-
   if (request.mode === 'navigate') {
     console.log('Navigate request');
     // We want to make sure we update the app resource cache if 

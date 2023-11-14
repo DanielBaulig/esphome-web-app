@@ -31,8 +31,49 @@ function getRegisteredControllers() {
   return registry.hosts.map(host => registry.controllers[host]);
 }
 
-function registerHost(host) {
-  registry.registerHost(host);
+async function waitForMessage(message, ms) {
+  const p = new Promise((resolve, reject) => {
+    let timeout;
+    function cleanup() {
+      clearTimeout(timeout);
+      timeout = 0;
+      navigator.serviceWorker.removeEventListener('message', handler);
+    }
+    function handler(event) {
+      if (event.data === message) {
+        if (!timeout) {
+          return;
+        }
+        cleanup();
+        resolve();
+      }
+    }
+    timeout = setTimeout(() => {
+      cleanup();
+      reject();
+    }, ms);
+    navigator.serviceWorker.addEventListener('message', handler);
+  });
+  return p;
+}
+
+async function waitForPrivateNetworkAccessRequestConfirmation() {
+  try {
+    await waitForMessage('pna_confirm', 1000);
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
+
+let hasStrictMixedContent = null;
+
+async function registerHost(host) {
+  const controller = registry.registerHost(host);
+  controller.connect();
+  if (hasStrictMixedContent === null) {
+    hasStrictMixedContent = !await waitForPrivateNetworkAccessRequestConfirmation(host);
+  }
   renderRoot();
 }
 
@@ -50,9 +91,18 @@ function promptAndRegisterHost() {
 }
 
 function renderRoot() {
+  let strictMixedContentWarning = null;
+  if (hasStrictMixedContent) {
+    const insecureOrigin = new URL(location.href);
+    insecureOrigin.protocol = 'http';
+    strictMixedContentWarning = <div>
+      This user agent does not allow access to private network hosts from secure origins. Please try loading the <a href={insecureOrigin.href}>insecure origin</a> instead.
+    </div>;
+  }
   reactRoot.render(
     <>
       <Header onAddController={() => promptAndRegisterHost()}/>
+      {strictMixedContentWarning}
       <main>
         <ControllerList controllers={getRegisteredControllers()} onRemoveController={controller => removeHost(controller.host)} />
       </main>

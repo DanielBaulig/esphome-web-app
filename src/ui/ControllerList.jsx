@@ -176,7 +176,9 @@ function useController(controller) {
 
 function ControllerListItem({controller, onRemove}) {
   const [state, actions] = useController(controller);
-  const [isCardVisible, setShowCard] = useState(state.connecting || state.connected);
+  const isCardVisible = state.connecting || state.connected;
+  const [isCardClosing, setCardClosing] = useState(false);
+
   const cardRef = useRef(null);
 
   let cardContent = <Spinner />;
@@ -194,20 +196,24 @@ function ControllerListItem({controller, onRemove}) {
       onToggleController={() => {
         if (!isCardVisible) {
           actions.connect();
+        } else {
+          setCardClosing(true);
         }
-        setShowCard(!isCardVisible);
       }}
     />
     <CSSTransition 
       nodeRef={cardRef} 
-      in={isCardVisible} 
+      in={isCardVisible && !isCardClosing}
       classNames={"fade"} 
       addEndListener={(done) => {
         cardRef.current.addEventListener('transitionend', done, false);
       }}
       timeout={1000} 
       appear={true} 
-      onExited={() => actions.disconnect()}
+      onExited={() => {
+        actions.disconnect();
+        setCardClosing(false);
+      }}
       unmountOnExit={true}
       mountOnEnter={true}
     >
