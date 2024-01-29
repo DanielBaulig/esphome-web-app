@@ -33,20 +33,16 @@ export default class EventSource extends EventTarget {
   #preventCors = true;
   #abortController = new AbortController();
   #fetchOptions;
+  #fetch;
   #url;
   #lastEventId = '';
   #retryTimeout = 5000;
   #retryRef = 0;
 
-  constructor(url, {fetchOptions} = {}) {
+  constructor(url, {fetch} = {}) {
     super();
     const { signal } = this.#abortController;
-    const targetAddressSpace = globalThis.isSecureContext ? {
-      targetAddressSpace: 'private',
-    } : {};
-    this.#fetchOptions = Object.assign({
-      signal,
-    }, fetchOptions, targetAddressSpace);
+    this.#fetch = fetch || globalThis.fetch;
     this.#url = url;
     this.#connect();
   }
@@ -61,10 +57,18 @@ export default class EventSource extends EventTarget {
     return {};
   }
 
+  #getFetchOptions() {
+    const { signal } = this.#abortController;
+    return {
+      headers: this.#getFetchHeaders(),
+      signal,
+    };
+  }
+
   #connect() {
     this.#cancelRetry();
     this.readyState = READYSTATE_CONNECTING;
-    fetch(this.#url, { ...this.#fetchOptions, headers: this.#getFetchHeaders()}).then(this.#onResponse, this.#onFetchError);
+    this.#fetch.call(undefined, this.#url, this.#getFetchOptions()).then(this.#onResponse, this.#onFetchError);
   }
 
   close() {
@@ -190,4 +194,3 @@ export default class EventSource extends EventTarget {
     }
   }
 }
-globalThis.EventSource = EventSource;

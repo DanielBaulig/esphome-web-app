@@ -1,11 +1,25 @@
-import EventSource from './FetchEventSource';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import ControllerList from './ui/ControllerList.jsx';
 import Header from './ui/Header.jsx';
 import ControllerRegistry from './ControllerRegistry.js';
 
-const registry = new ControllerRegistry();
+function privateAddressSpaceFetch(...args) {
+  const isInsecureTarget = args[0].toString().startsWith('http:');
+  const usePrivateAddressSpace = globalThis.isSecureContext && isInsecureTarget;
+  if (usePrivateAddressSpace) {
+    if (args.length < 2) {
+      args.push({});
+    }
+    Object.assign(args[1], { 
+      targetAddressSpace: 'private',
+    });
+  }
+
+  return fetch(...args);
+}
+
+const registry = new ControllerRegistry('controllers', {fetch: privateAddressSpaceFetch});
 
 import './main.css';
 
