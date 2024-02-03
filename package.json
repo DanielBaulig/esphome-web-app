@@ -20,7 +20,8 @@
     "react-dom": "^18.2.0",
     "react-transition-group": "^4.4.5",
     "rollup-plugin-output-manifest": "^2.0.0",
-    "vite": "^4.4.11"
+    "vite": "^4.4.11",
+    "vite-plugin-top-level-await": "^1.4.1"
   },
   "scripts": {
     "dev": "vite",

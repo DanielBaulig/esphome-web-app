@@ -1,9 +1,14 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import manifest from 'rollup-plugin-output-manifest';
+import topLevelAwait from 'vite-plugin-top-level-await';
 
 export default defineConfig({
-  plugins: [react(), manifest({nameWithExt: false, filter: () => true})],
+  plugins: [
+    react(), 
+    manifest({nameWithExt: false, filter: () => true}), 
+    topLevelAwait(),
+  ],
   build: {
     manifest: 'vite-manifest.json',
     outDir: "./public",
