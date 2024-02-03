@@ -16,6 +16,7 @@
 }
 
 .header button {
+  user-select: text;
   border: none;
   background-color: var(--primary-color);
 }
