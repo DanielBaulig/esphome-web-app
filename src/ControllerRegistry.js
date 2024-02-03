@@ -31,7 +31,7 @@ export default class ControllerRegistry extends EventTarget {
   }
 
   #createController(host) {
-    const controller = new ESPHomeWebController(host, { 
+    const controller = new ESPHomeWebController(host, {
       fetch: this.#fetch, 
       EventSource: curry(FetchEventSource, {fetch: this.#fetch})
     });

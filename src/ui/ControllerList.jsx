@@ -208,8 +208,8 @@ function ControllerListItem({controller, onRemove}) {
       addEndListener={(done) => {
         cardRef.current.addEventListener('transitionend', done, false);
       }}
-      timeout={1200} 
-      appear={true} 
+      timeout={1200}
+      appear={true}
       onExited={() => {
         actions.disconnect();
         setCardClosing(false);
