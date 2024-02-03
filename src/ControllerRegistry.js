@@ -8,10 +8,11 @@ function curry(C, arg) {
   }
 }
 
-export default class ControllerRegistry {
+export default class ControllerRegistry extends EventTarget {
   #fetch;
 
   constructor(storageKey = "controllers", {fetch} = {}) {
+    super();
     this.storageKey = storageKey;
     this.#fetch = fetch;
     const json = JSON.parse(localStorage.getItem(storageKey));
@@ -19,11 +20,25 @@ export default class ControllerRegistry {
     this.#constructControllers();
   }
 
+  #onControllerError = (event) => {
+    this.dispatchEvent(new CustomEvent('controllererror', {detail: event}));
+  }
+
+  #destroyController(host) {
+    const controller = this.controllers[host];
+    controller.removeEventListener('error', this.#onControllerError);
+    controller.destroy();
+  }
+
   #createController(host) {
-    return new ESPHomeWebController(host, { 
+    const controller = new ESPHomeWebController(host, { 
       fetch: this.#fetch, 
       EventSource: curry(FetchEventSource, {fetch: this.#fetch})
     });
+
+    controller.addEventListener('error', this.#onControllerError);
+
+    return controller;
   }
 
   #constructControllers() {
@@ -56,7 +71,7 @@ export default class ControllerRegistry {
       return;
     }
     this.hosts = this.hosts.filter(v => v != host);
-    this.controllers[host].destroy();
+    this.#destroyController(host);
     delete this.controllers[host];
     this.#flush();
   }

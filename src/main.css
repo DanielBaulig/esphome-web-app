@@ -10,6 +10,7 @@ body {
   --card-background: #fbfbfb;
   --section-background: #f1f1f1;
   --box-shadow: 2px 2px 4px 2px lightslategray;
+  --card-background-warning: darksalmon;
   font-size: 16px;
   margin: 1rem 2rem;
   background-color: var(--primary-background);

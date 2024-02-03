@@ -166,6 +166,10 @@ self.addEventListener('fetch', (event) => {
   if (!request.url.startsWith(location.origin)) {
     console.debug('Bypassing request to different origin', request);
 
+    // If we see a PNA request in the ServiceWorker, then the request
+    // was not blocked by the mixed content policy.
+    // This holds true at least currently in Chrome, which is the only
+    // browser implementing PNA confirmation dialogs anyway.
     if (request.targetAddressSpace === 'private') {
       postMessage(event.clientId, 'pna_confirm');
     }

@@ -1,0 +1,26 @@
+.toast {
+  background-color: var(--card-background-warning);
+  border: 3px outset black;
+  border-radius: 15px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: grid;
+  grid-template-rows: 1fr;
+}
+
+.toast:global(.transition-enter) {
+  grid-template-rows: 0fr;
+}
+
+.toast:global(.transition-exit) {
+  grid-template-rows: 1fr;
+}
+
+.toast:global(.transition-enter-active) {
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 300ms ease-in-out;
+}
+
+.toast .content {
+  overflow: hidden;
+}

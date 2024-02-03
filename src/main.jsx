@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import ControllerList from './ui/ControllerList.jsx';
 import Header from './ui/Header.jsx';
 import ControllerRegistry from './ControllerRegistry.js';
+import Toast from './ui/Toast.jsx';
 
 function privateAddressSpaceFetch(...args) {
   const isInsecureTarget = args[0].toString().startsWith('http:');
@@ -20,6 +21,11 @@ function privateAddressSpaceFetch(...args) {
 }
 
 const registry = new ControllerRegistry('controllers', {fetch: privateAddressSpaceFetch});
+
+
+registry.addEventListener('controllererror', (event) => {
+  checkStrictMixedContent(event.detail.target.host);
+});
 
 import './main.css';
 
@@ -55,40 +61,55 @@ async function waitForMessage(message, ms) {
     }
     function handler(event) {
       if (event.data === message) {
-        if (!timeout) {
+        if (ms !== null && !timeout) {
           return;
         }
         cleanup();
         resolve();
       }
     }
-    timeout = setTimeout(() => {
-      cleanup();
-      reject();
-    }, ms);
+    if (ms !== null) {
+      timeout = setTimeout(() => {
+        cleanup();
+        reject();
+      }, ms);
+    }
     navigator.serviceWorker.addEventListener('message', handler);
   });
   return p;
 }
 
-async function waitForPrivateNetworkAccessRequestConfirmation() {
-  try {
-    await waitForMessage('pna_confirm', 1000);
+let receivedPrivateNetworkAccessConfirmation = false;
+async function waitForPrivateNetworkAccessRequestConfirmation(ms = 1000) {
+  if (receivedPrivateNetworkAccessConfirmation) {
     return true;
+  }
+  try {
+    await waitForMessage('pna_confirm', ms);
+    return receivedPrivateNetworkAccessConfirmation = true;
   } catch(e) {
     return false;
   }
 }
 
-let hasStrictMixedContent = null;
+// Let's montior for a PrivateNetworkAccess confirmation message
+waitForPrivateNetworkAccessRequestConfirmation(null);
+
+let hasStrictMixedContent;
+async function checkStrictMixedContent(host) {
+  if (!globalThis.isSecureContext) {
+    return;
+  }
+  if (hasStrictMixedContent === undefined) {
+    hasStrictMixedContent = !await waitForPrivateNetworkAccessRequestConfirmation(host);
+    renderRoot();
+  }
+}
 
 async function registerHost(host) {
   const controller = registry.registerHost(host);
   controller.connect();
-  if (hasStrictMixedContent === null) {
-    hasStrictMixedContent = !await waitForPrivateNetworkAccessRequestConfirmation(host);
-  }
-  renderRoot();
+  checkStrictMixedContent(host);
 }
 
 function removeHost(host) {
@@ -105,14 +126,11 @@ function promptAndRegisterHost() {
 }
 
 function renderRoot() {
-  let strictMixedContentWarning = null;
-  if (hasStrictMixedContent) {
-    const insecureOrigin = new URL(location.href);
-    insecureOrigin.protocol = 'http';
-    strictMixedContentWarning = <div>
-      This user agent does not allow access to private network hosts from secure origins. Please try loading the <a href={insecureOrigin.href}>insecure origin</a> instead.
-    </div>;
-  }
+  const insecureOrigin = new URL(location.href);
+  insecureOrigin.protocol = 'http';
+  const strictMixedContentWarning = <Toast visible={hasStrictMixedContent}>
+    This user agent appears to  not allow access to private network hosts from secure origins. Please try loading the <a href={insecureOrigin.href}>insecure origin</a> instead.
+  </Toast>;
   reactRoot.render(
     <>
       <Header onAddController={() => promptAndRegisterHost()}/>
