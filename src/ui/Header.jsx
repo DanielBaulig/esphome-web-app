@@ -1,6 +1,6 @@
 import { header, menu, title as titleClass } from './Header.module.css';
 
-import { title } from '../../esphome-web.json';
+import { title } from '../config';
 
 function Header({onAddController}) {
   return <header className={header}>

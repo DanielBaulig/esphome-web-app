@@ -10,7 +10,7 @@ import {
 } from './ControllerList.module.css';
 import { CSSTransition } from 'react-transition-group';
 
-import { filters } from '../../esphome-web.json';
+import { filters } from '../config';
 
 function delay(ms) {
   return new Promise((resolve, reject) => {
