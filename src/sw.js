@@ -75,6 +75,7 @@ const viteManifest = {
 async function cacheManifestResources(resourceManifest) {
   const { isCacheCurrent, updateCache } = await fetchResourceManifest(resourceManifest);
   if (isCacheCurrent) {
+    console.debug('No changes in resource manifest. Skipping update.');
     return;
   }
   return await updateCache();
@@ -122,8 +123,10 @@ async function fetchResourceManifest(resourceManifest) {
 }
 
 async function cacheAppResources() {
+  console.debug('Updating app cache');
   return Promise.all([cacheManifestResources(pluginManifest), cacheResources([
     '/',
+    '/icons/192.png',
     '/icons/256.png',
   ])]);
 }

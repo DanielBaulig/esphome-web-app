@@ -1,0 +1,15 @@
+{
+  "name": "ESPHome Link",
+  "icons": [{
+    "src": "icons/256.png",
+    "type": "image/png",
+    "sizes": "256x256"
+  }, {
+    "src": "icons/192.png",
+    "type": "image/png",
+    "sizes": "192x192"
+  }],
+  "start_url": ".",
+  "display": "standalone",
+  "description": "A standalone web app to control ESPHome based IOT devices"
+}
