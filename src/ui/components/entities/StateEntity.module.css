@@ -1,6 +1,5 @@
 .stateEntity {
-  composes: entityCard from '../EntityCard.module.css';
-  flex-basis: 1%;
+  flex-basis: 1;
 }
 
 .stateEntity h3 {
