@@ -5,6 +5,8 @@ import Header from './ui/Header.jsx';
 import ControllerRegistry from './ControllerRegistry.js';
 import Toast from './ui/Toast.jsx';
 
+import { insecureOrigin } from './config';
+
 function privateAddressSpaceFetch(...args) {
   const isInsecureTarget = args[0].toString().startsWith('http:');
   const usePrivateAddressSpace = globalThis.isSecureContext && isInsecureTarget;
@@ -12,7 +14,7 @@ function privateAddressSpaceFetch(...args) {
     if (args.length < 2) {
       args.push({});
     }
-    Object.assign(args[1], { 
+    Object.assign(args[1], {
       targetAddressSpace: 'private',
     });
   }
@@ -126,10 +128,14 @@ function promptAndRegisterHost() {
 }
 
 function renderRoot() {
-  const insecureOrigin = new URL(location.href);
-  insecureOrigin.protocol = 'http';
+  let href = insecureOrigin;
+  if (!href) {
+    const url = new URL(location.href);
+    url.protocol = 'http';
+    href = url.href;
+  }
   const strictMixedContentWarning = <Toast visible={hasStrictMixedContent}>
-    This user agent appears to  not allow access to private network hosts from secure origins. Please try loading the <a href={insecureOrigin.href}>insecure origin</a> instead.
+    This user agent appears to  not allow access to private network hosts from secure origins. Please try loading the <a href={href}>insecure origin</a> instead.
   </Toast>;
   reactRoot.render(
     <>
