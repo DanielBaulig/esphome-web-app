@@ -1,0 +1,41 @@
+.toggle input {
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+
+.toggle {
+  --size: 34px;
+  --spacing: 4px;
+  --width: calc(1.75 * var(--size) + 2*var(--spacing));
+  --height: calc(var(--size) + 2*var(--spacing));
+  cursor: pointer;
+  display: inline-block;
+  width: var(--width);
+  height: var(--height);
+  border-radius: var(--height);
+  position: relative;
+  background-color: color-mix(in srgb, var(--primary-background) 30%, white);
+  box-sizing: content-box;
+}
+
+.toggle:has(input:checked) {
+  background-color: var(--primary-color);
+  opacity: 1;
+}
+
+.toggle:after {
+  content: '';
+  position: absolute;
+  border-radius: 100%;
+  top: var(--spacing);
+  left: var(--spacing);
+  width: var(--size);
+  height: var(--size);
+  transition: 0.4s;
+  background-color: var(--card-background);
+}
+
+.toggle:has(input:checked):after {
+  transform: translateX(calc(var(--width) - var(--size) - 2* var(--spacing)));
+}

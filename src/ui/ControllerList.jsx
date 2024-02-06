@@ -23,6 +23,7 @@ const BinarySensorEntity = lazy(() => import('./components/entities/BinarySensor
 const ButtonEntity = lazy(() => import('./components/entities/ButtonEntity'));
 const SelectEntity = lazy(() => import('./components/entities/SelectEntity'));
 const SensorEntity = lazy(() => import('./components/entities/SensorEntity'));
+const SwitchEntity = lazy(() => import('./components/entities/SwitchEntity'));
 
 function getComponentForEntity(entity) {
   const loading = <Spinner />;
@@ -46,6 +47,10 @@ function getComponentForEntity(entity) {
     case 'sensor':
       return <Suspense fallback={loading} key={entity.id}>
         <SensorEntity entity={entity} />
+      </Suspense>;
+    case 'switch':
+      return <Suspense fallback={loading} key={entity.id}>
+        <SwitchEntity entity={entity} />
       </Suspense>;
     default:
       return <StateEntity entity={entity} key={entity.id} />

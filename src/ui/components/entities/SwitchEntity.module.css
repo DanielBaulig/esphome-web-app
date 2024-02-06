@@ -1,0 +1,6 @@
+.switchEntity > div {
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
+  margin: 0.5em 0;
+}
