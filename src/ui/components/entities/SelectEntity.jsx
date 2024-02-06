@@ -1,4 +1,3 @@
-
 import useEntityState from './useEntityState';
 
 import { select } from './SelectEntity.module.css';

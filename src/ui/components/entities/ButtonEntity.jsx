@@ -1,12 +1,19 @@
 import useEntityState from './useEntityState';
+import getEntityLabel from './getEntityLabel';
+
+import EntityCard from '../EntityCard';
 
 import { button } from './ButtonEntity.module.css';
 
 export default function ButtonEntity({entity}) {
   const state = useEntityState(entity);
+  const label = getEntityLabel(state);
 
-  return <fieldset className={button} onClick={() => entity.press()}>
-    <legend>{state.name || entity.slug}</legend>
-    <button>{state.name || entity.slug}</button>
-  </fieldset>;
+  return <EntityCard
+    title={label}
+    className={button}
+    onClick={() => entity.press()}
+  >
+    <button>{label}</button>
+  </EntityCard>;
 }

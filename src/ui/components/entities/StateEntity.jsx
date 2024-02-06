@@ -1,13 +1,15 @@
 import useEntityState from './useEntityState';
+import getEntityLabel from './getEntityLabel';
+import EntityCard from '../EntityCard';
+
 
 import { stateEntity } from './StateEntity.module.css';
 
 export default function StateEntity({entity}) {
   const state = useEntityState(entity);
 
-  return <fieldset className={stateEntity}>
-    <legend>{state.name || entity.slug}</legend>
+  return <EntityCard title={getEntityLabel(state)} className={stateEntity}>
     <h3>{state.state}</h3>
-  </fieldset>;
+  </EntityCard>;
 }
 
