@@ -32,7 +32,6 @@ const READYSTATE_CLOSED = 2;
 export default class EventSource extends EventTarget {
   #preventCors = true;
   #abortController = new AbortController();
-  #fetchOptions;
   #fetch;
   #url;
   #lastEventId = '';
@@ -151,13 +150,13 @@ export default class EventSource extends EventTarget {
         }
         const lines = normalized.substr(0, normalized.length  - 1).split('\n');
 
-        lines.forEach((value) => {
-          if (isComment(value)) {
+        lines.forEach((line) => {
+          if (isComment(line)) {
             return;
           }
 
-          if (isField(value)) {
-            const [fieldName, fieldValue] = getFieldNameAndValue(value);
+          if (isField(line)) {
+            const [fieldName, fieldValue] = getFieldNameAndValue(line);
 
             switch (fieldName) {
               case 'data':
@@ -176,14 +175,14 @@ export default class EventSource extends EventTarget {
             return;
           }
 
-          if (isTermination(value)) {
+          if (isTermination(line)) {
             this.#onMessageComplete(message);
             message = createMessage();
             return;
           }
         });
       } while(true);
-      console.log('Reached end of stream');
+      console.warn('Reached end of stream');
       // Only exits out of while loop if end of stream was reached.
       this.#retryConnection();
     } catch(e) {
