@@ -1,0 +1,21 @@
+.state {
+}
+
+.state h3 {
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  flex-basis: 100%;
+}
+
+.position {
+  display: flex;
+  justify-content: center;
+  flex-basis: 100%;
+}
+
+.tilt {
+  display: flex;
+  justify-content: center;
+  flex-basis: 100%;
+}
