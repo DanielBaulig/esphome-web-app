@@ -1,8 +1,12 @@
 .entityCard {
   border-radius: 0 0 12px 12px;
-  margin: 4px;
+  margin: 0.1em 0.3em;
   flex-grow: 1;
   display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
 }
 
 .entityCard button {

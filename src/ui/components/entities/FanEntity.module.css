@@ -1,0 +1,35 @@
+.fan li {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+}
+
+.fan li:first-child {
+  margin: 0.5em 0;
+}
+
+.fan {
+  align-items: flex-start;
+}
+
+.speedFan {
+  flex-basis: 100%;
+}
+
+.fan ul {
+  list-style-type: none;
+  padding: 0;
+  flex-grow: 1;
+}
+
+.speed {
+  background-color: var(--section-background);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.speed > * {
+  flex-basis: 100%;
+}

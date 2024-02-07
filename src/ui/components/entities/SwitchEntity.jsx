@@ -12,7 +12,7 @@ export default function SwitchEntity({entity}) {
 
   return <EntityCard title={getEntityLabel(state)} className={switchEntity}>
     <div>
-      <ToggleInput value={state.state === 'ON'} onChange={() => entity.toggle()} />
+      <ToggleInput checked={state.state === 'ON'} onChange={() => entity.toggle()} />
     </div>
   </EntityCard>;
 }

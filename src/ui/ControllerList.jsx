@@ -1,9 +1,9 @@
 import { memo, forwardRef, useId, useEffect, useState, useReducer, lazy, Suspense, useRef } from 'react';
 import Spinner from './Spinner';
 import StateEntity from './components/entities/StateEntity';
-import { 
-  controllerList, 
-  listItem, 
+import {
+  controllerList,
+  listItem,
   header,
   card,
   content,
@@ -24,6 +24,7 @@ const ButtonEntity = lazy(() => import('./components/entities/ButtonEntity'));
 const SelectEntity = lazy(() => import('./components/entities/SelectEntity'));
 const SensorEntity = lazy(() => import('./components/entities/SensorEntity'));
 const SwitchEntity = lazy(() => import('./components/entities/SwitchEntity'));
+const FanEntity = lazy(() => import('./components/entities/FanEntity'));
 
 function getComponentForEntity(entity) {
   const loading = <Spinner />;
@@ -51,6 +52,10 @@ function getComponentForEntity(entity) {
     case 'switch':
       return <Suspense fallback={loading} key={entity.id}>
         <SwitchEntity entity={entity} />
+      </Suspense>;
+    case 'fan':
+      return <Suspense fallback={loading} key={entity.id}>
+        <FanEntity entity={entity} />
       </Suspense>;
     default:
       return <StateEntity entity={entity} key={entity.id} />
@@ -138,7 +143,7 @@ function useController(controller) {
       case 'entitydiscovered':
         return { ...state, ...pullControllerState(controller) }
       // TODO: Right now this does not cover updates to entities themselves.
-      // However, state filters might actually require a re-render when 
+      // However, state filters might actually require a re-render when
       // entity state itself changes.
     }
   }, { ...pullControllerState(controller) });
@@ -200,7 +205,7 @@ function ControllerListItem({controller, onRemove}) {
   }
 
   return <li className={listItem}>
-    <ControllerHeader 
+    <ControllerHeader
       host={controller.host}
       onRemoveController={onRemove}
       onToggleController={() => {
@@ -211,10 +216,10 @@ function ControllerListItem({controller, onRemove}) {
         }
       }}
     />
-    <CSSTransition 
-      nodeRef={cardRef} 
+    <CSSTransition
+      nodeRef={cardRef}
       in={isCardVisible && !isCardClosing}
-      classNames={"fade"} 
+      classNames={"fade"}
       addEndListener={(done) => {
         cardRef.current.addEventListener('transitionend', done, false);
       }}
