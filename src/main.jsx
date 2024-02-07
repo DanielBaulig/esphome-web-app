@@ -27,6 +27,7 @@ const registry = new ControllerRegistry('controllers', {fetch: privateAddressSpa
 
 registry.addEventListener('controllererror', (event) => {
   checkStrictMixedContent(event.detail.target.host);
+  renderRoot();
 });
 
 import './main.css';
@@ -104,7 +105,6 @@ async function checkStrictMixedContent(host) {
   }
   if (hasStrictMixedContent === undefined) {
     hasStrictMixedContent = !await waitForPrivateNetworkAccessRequestConfirmation(host);
-    renderRoot();
   }
 }
 
@@ -112,6 +112,7 @@ async function registerHost(host) {
   const controller = registry.registerHost(host);
   controller.connect();
   checkStrictMixedContent(host);
+  renderRoot();
 }
 
 function removeHost(host) {
