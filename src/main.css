@@ -16,6 +16,7 @@ body {
   background-color: var(--primary-background);
   display: flex;
   justify-content: center;
+  font-family: system-ui;
 }
 
 body > div {
