@@ -3,6 +3,8 @@ The ESPHome Web App (ESPWA) is a Progressive Web App (PWA) designed to streamlin
 
 Running directly in your browser, ESPHome Web App operates locally and can even function without an internet connection once cached. Its only requirement is an active ESPHome web_server component for communication with the ESPHome MCU.
 
+<img src="images/esphome-web-app.png" width="300" alt="ESPHome Web App" />
+
 ## Why Use ESPHome Web App?
 While ESPHome and Home Assistant are indeed powerful tools for managing ESPHome-based microcontrollers, they often necessitate additional infrastructure like a Raspberry Pi or Home Assistant hardware. ESPHome Web App fills the gap by enabling provisioning, configuration, and control of ESPHome devices in locations where such infrastructure might not be readily available, such as caravans and trailers, corporate offices, coffeshops or other remote settings.
 
