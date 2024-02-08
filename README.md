@@ -6,9 +6,9 @@ Running directly in your browser, ESPHome Web App operates locally and can even 
 <img src="images/esphome-web-app.png" width="300" alt="ESPHome Web App" />
 
 ## Why Use ESPHome Web App?
-While ESPHome and Home Assistant are indeed powerful tools for managing ESPHome-based microcontrollers, they often necessitate additional infrastructure like a Raspberry Pi or Home Assistant hardware. ESPHome Web App fills the gap by enabling provisioning, configuration, and control of ESPHome devices in locations where such infrastructure might not be readily available, such as caravans and trailers, corporate offices, coffeshops or other remote settings.
+While ESPHome and Home Assistant are indeed powerful tools for managing ESPHome-based microcontrollers, they often necessitate additional infrastructure like a Raspberry Pi or Home Assistant color hardware. ESPHome Web App fills the gap by enabling provisioning, configuration, and control of ESPHome devices in locations where such infrastructure might not be readily available, such as caravans and trailers, corporate offices, coffeeshops or other remote settings.
 
-Moreover, for Makers seeking to offer customizable and user-friendly setups for their products, ESPHome Web App provides an accessible solution. It allows users unfamiliar with Home Assistant or ESPHome to interact with devices seamlessly.
+Moreover, for Makers seeking to offer customizable and user-friendly UI for their products, ESPHome Web App provides an accessible and customizable solution. It allows users unfamiliar with Home Assistant or ESPHome to interact with devices seamlessly without additional resources having to be diverted to app or other development.
 
 ## Getting Started
 To begin using ESPHome Web App, flash an ESP32 or ESP8266 microcontroller with ESPHome, including the web_server component, and connect it to Wi-Fi.
