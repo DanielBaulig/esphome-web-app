@@ -76,7 +76,7 @@ function getComponentForEntity(entity) {
 
 function makeFilter(template) {
   if (typeof template !== 'object') {
-    template = { type: 'id', value: filter };
+    template = { type: 'id', value: template };
   }
 
   switch (template.type) {
