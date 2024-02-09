@@ -15,7 +15,7 @@
   height: var(--height);
   border-radius: var(--height);
   position: relative;
-  background-color: color-mix(in srgb, var(--primary-background) 30%, white);
+  background-color: var(--primary-background-30);
   box-sizing: content-box;
 }
 
