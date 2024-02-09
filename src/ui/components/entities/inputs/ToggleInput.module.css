@@ -1,10 +1,10 @@
-.toggle input {
+.toggle > input {
   visibility: hidden;
   width: 0;
   height: 0;
 }
 
-.toggle {
+.toggle > label {
   --size: 34px;
   --spacing: 4px;
   --width: calc(1.75 * var(--size) + 2*var(--spacing));
@@ -19,12 +19,12 @@
   box-sizing: content-box;
 }
 
-.toggle:has(input:checked) {
+.toggle > input:checked + label {
   background-color: var(--primary-color);
   opacity: 1;
 }
 
-.toggle:after {
+.toggle > input + label:after {
   content: '';
   position: absolute;
   border-radius: 100%;
@@ -36,6 +36,6 @@
   background-color: var(--card-background);
 }
 
-.toggle:has(input:checked):after {
+.toggle > input:checked + label:after {
   transform: translateX(calc(var(--width) - var(--size) - 2* var(--spacing)));
 }

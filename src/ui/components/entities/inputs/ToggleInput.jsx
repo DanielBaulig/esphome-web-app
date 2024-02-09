@@ -1,12 +1,16 @@
+import { useId } from 'react';
 import { toggle } from './ToggleInput.module.css';
 
 export default function ToggleInput({checked, onChange}) {
-  return <label className={toggle}>
+  const id = useId();
+  return <span className={toggle}>
     <input
       type="checkbox"
       className={toggle}
       checked={checked}
       onChange={onChange}
+      id={id}
     />
-  </label>;
+    <label for={id}></label>
+  </span>;
 }
