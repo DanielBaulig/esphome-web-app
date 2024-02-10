@@ -31,6 +31,7 @@ registry.addEventListener('controllererror', (event) => {
 });
 
 import './main.css';
+import 'virtual:custom.css';
 
 function sw() {
   if (import.meta.env.DEV) {
