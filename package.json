@@ -1,6 +1,6 @@
 {
   "name": "esphome-web-app",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A standalone app for flashing, provisioning and controlling of the ESPhome devices",
   "keywords": [
     "esphome",
