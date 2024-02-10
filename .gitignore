@@ -2,4 +2,5 @@
 *.swo
 public/
 node_modules/
+.script-env
 *.DS_Store
