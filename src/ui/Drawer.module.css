@@ -1,0 +1,34 @@
+.drawer {
+  display: grid;
+  grid-template-rows: 1fr;
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  overflow: hidden;
+}
+
+.drawer:global(.animation-enter) {
+  grid-template-rows: 0fr;
+}
+
+.drawer:global(.animation-enter-active) {
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 1000ms ease-in-out;
+}
+
+.drawer:global(.animation-exit) {
+  grid-template-rows: 1fr;
+}
+
+.drawer:global(.animation-exit-active) {
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 500ms ease-in-out;
+}
+
+.drawer:global(.animation-exit-done) {
+  grid-template-rows: 0;
+}
+

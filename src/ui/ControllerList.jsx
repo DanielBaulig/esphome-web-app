@@ -1,14 +1,13 @@
 import { memo, forwardRef, useId, useEffect, useState, useReducer, lazy, Suspense, useRef } from 'react';
 import Spinner from './Spinner';
+import Drawer from './Drawer';
 import StateEntity from './components/entities/StateEntity';
 import {
   controllerList,
   listItem,
   header,
   card,
-  content,
 } from './ControllerList.module.css';
-import { CSSTransition } from 'react-transition-group';
 
 import { filters } from '../config';
 
@@ -125,12 +124,6 @@ function ControllerEntities({entities}) {
   return components;
 };
 
-const ControllerCard = forwardRef(function ControllerCard({children}, ref) {
-  return <div className={card} ref={ref}>
-    {children}
-  </div>;
-});
-
 function pullControllerState(controller) {
   return {
     connected: controller.connected,
@@ -201,10 +194,8 @@ function useController(controller) {
 
 function ControllerListItem({controller, onRemove}) {
   const [state, actions] = useController(controller);
-  const isCardVisible = state.connecting || state.connected;
-  const [isCardClosing, setCardClosing] = useState(false);
-
-  const cardRef = useRef(null);
+  const [isDrawerClosing, setDrawerClosing] = useState(false);
+  const isConnected = state.connecting || state.connected;
 
   let cardContent = <Spinner />;
   if (state.connected && state.entities.length > 0) {
@@ -219,35 +210,23 @@ function ControllerListItem({controller, onRemove}) {
       host={controller.host}
       onRemoveController={onRemove}
       onToggleController={() => {
-        if (!isCardVisible) {
+        if (!isConnected) {
           actions.connect();
         } else {
-          setCardClosing(true);
+          setDrawerClosing(true);
         }
       }}
     />
-    <CSSTransition
-      nodeRef={cardRef}
-      in={isCardVisible && !isCardClosing}
-      classNames={"fade"}
-      addEndListener={(done) => {
-        cardRef.current.addEventListener('transitionend', done, false);
-      }}
-      timeout={1200}
-      appear={true}
-      onExited={() => {
-        actions.disconnect();
-        setCardClosing(false);
-      }}
-      unmountOnExit={true}
-      mountOnEnter={true}
-    >
-      <ControllerCard ref={cardRef}>
-        <div className={content}>
-          {cardContent}
-        </div>
-      </ControllerCard>
-    </CSSTransition>
+      <Drawer
+        className={card}
+        open={isConnected && !isDrawerClosing}
+        onDoneClosing={() => {
+          actions.disconnect();
+          setDrawerClosing(false);
+        }}
+      >
+        {cardContent}
+      </Drawer>
   </li>;
 }
 

@@ -32,34 +32,8 @@
 }
 
 .card {
-  display: grid;
-  grid-template-rows: 1fr;
   border-top: 1px solid black;
   background-color: var(--card-background);
-}
-
-.card .content {
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
   padding-bottom: 0.2em;
 }
 
-.card:global(.fade-enter) {
-  grid-template-rows: 0fr;
-}
-
-.card:global(.fade-enter-active) {
-  grid-template-rows: 1fr;
-  transition: grid-template-rows 1000ms ease-in-out;
-}
-
-.card:global(.fade-exit) {
-  grid-template-rows: 1fr;
-}
-
-.card:global(.fade-exit-active) {
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 500ms ease-in-out;
-}
