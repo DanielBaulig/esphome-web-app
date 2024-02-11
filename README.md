@@ -37,5 +37,8 @@ While an instance of ESPHome Web App is hosted at https://esplink.rarelyunplugge
 
 If you're interested in providing provisioning and control for your ESPHome-based products and devices, ESPHome Web App can be effortlessly customized to feature your branding and tailor UI elements and workflows to your specific needs.
 
+You can learn more about the customization and branding options in the 
+[Setup and Customize an ESPHome Web App instance](https://www.rarelyunplugged.com/posts/setup-and-customize-a-esphome-web-app-instance/) guide.
+
 ## Future Development
 ESPHome Web App is continuously evolving, with plans for additional features such as direct ESP microcontroller flashing from within the app and provisioning Wi-Fi via Improv Serial and Improv Bluetooth.
