@@ -17,3 +17,7 @@
   min-height: 3rem;
   flex-grow: 1;
 }
+
+.entityCard:last-child {
+  margin-bottom: 0.3em;
+}

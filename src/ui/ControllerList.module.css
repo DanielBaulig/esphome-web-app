@@ -34,6 +34,4 @@
 .card {
   border-top: 1px solid black;
   background-color: var(--card-background);
-  padding-bottom: 0.2em;
 }
-
