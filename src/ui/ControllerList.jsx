@@ -2,11 +2,16 @@ import { memo, forwardRef, useId, useEffect, useState, useReducer, lazy, Suspens
 import Spinner from './Spinner';
 import Drawer from './Drawer';
 import StateEntity from './components/entities/StateEntity';
+import Icon from '@mdi/react';
+
+import { mdiCloseThick } from '@mdi/js';
+
 import {
   controllerList,
   listItem,
   header,
   card,
+  closeButton,
 } from './ControllerList.module.css';
 
 import { filters } from '../config';
@@ -114,7 +119,9 @@ function filterEntities(controller) {
 function ControllerHeader({host, onToggleController, onRemoveController}) {
   return <header className={header}>
     <button onClick={onToggleController}><h3>{host}</h3></button>
-    <button onClick={onRemoveController}>&#x2716;</button>
+    <button onClick={onRemoveController} className={closeButton}>
+      <Icon path={mdiCloseThick} size={1} />
+    </button>
   </header>;
 }
 

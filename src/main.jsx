@@ -145,7 +145,14 @@ function renderRoot() {
       <Header onAddController={() => promptAndRegisterHost()}/>
       {strictMixedContentWarning}
       <main>
-        <ControllerList controllers={getRegisteredControllers()} onRemoveController={controller => removeHost(controller.host)} />
+        <ControllerList
+          controllers={getRegisteredControllers()}
+          onRemoveController={controller => {
+            if (confirm('Are you sure you want to remove this controller?')) {
+              removeHost(controller.host) ;
+            }
+          }}
+        />
       </main>
     </>
   );
