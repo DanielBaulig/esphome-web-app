@@ -1,17 +1,18 @@
-import { CSSTransition } from  'react-transition-group';
-import  { toast, content } from './Toast.module.css';
+import Drawer from './Drawer';
+
 import { useRef } from 'react';
 
-export default function Toast({visible, children}) {
-  const nodeRef = useRef(null)
-  return <CSSTransition
-      in={visible}
-      nodeRef={nodeRef}
-      classNames="transition"
-      unmountOnExit
-      timeout={400}>
-    <div ref={nodeRef} className={toast}>
-      <div className={content}>{children}</div>
-    </div>
-  </CSSTransition>;
+import  { toast, content, warning } from './Toast.module.css';
+
+const styles = {
+  "warning": warning,
+};
+
+export default function Toast({visible, style, children}) {
+  return <Drawer
+      className={`${toast} ${styles[style]}`}
+      open={visible}
+  >
+    <div className={content}>{children}</div>
+  </Drawer>;
 }

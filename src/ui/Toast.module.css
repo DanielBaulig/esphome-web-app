@@ -1,26 +1,34 @@
-.toast {
+.warning {
   background-color: var(--card-background-warning);
+}
+
+.toast {
   border: 3px outset black;
   border-radius: 15px;
+  margin-bottom: 0em;
+}
+
+.toast:global(.animation-enter) {
+  margin-bottom: 0em;
+}
+
+.toast:global(.animation-enter-active) {
+  transition: grid-template-rows 300ms ease-in;
+}
+
+.toast:global(.animation-enter-done) {
+  transition: margin-bottom 200ms ease-out;
+  margin-bottom: 1em;
+}
+
+.toast:global(.animation-exit) {
+  transition: all 500ms ease-in-out;
+}
+
+.toast:global(.animation-exit-active) {
+  margin-bottom: 0em;
+}
+
+.content {
   padding: 1rem;
-  margin-bottom: 1rem;
-  display: grid;
-  grid-template-rows: 1fr;
-}
-
-.toast:global(.transition-enter) {
-  grid-template-rows: 0fr;
-}
-
-.toast:global(.transition-exit) {
-  grid-template-rows: 1fr;
-}
-
-.toast:global(.transition-enter-active) {
-  grid-template-rows: 1fr;
-  transition: grid-template-rows 300ms ease-in-out;
-}
-
-.toast .content {
-  overflow: hidden;
 }

@@ -4,9 +4,6 @@
 }
 
 .content {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
   overflow: hidden;
 }
 
@@ -20,15 +17,15 @@
 }
 
 .drawer:global(.animation-exit) {
+  transition: grid-template-rows 500ms ease-in-out;
   grid-template-rows: 1fr;
 }
 
 .drawer:global(.animation-exit-active) {
   grid-template-rows: 0fr;
-  transition: grid-template-rows 500ms ease-in-out;
 }
 
 .drawer:global(.animation-exit-done) {
-  grid-template-rows: 0;
+  grid-template-rows: 0fr;
 }
 
