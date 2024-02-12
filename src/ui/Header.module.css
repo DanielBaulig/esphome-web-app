@@ -83,5 +83,5 @@ ul.menu {
 }
 
 .menuToggle:checked ~ .menuToggleLabel svg {
-  transform: rotate(225deg);
+  transform: rotate(-225deg);
 }
