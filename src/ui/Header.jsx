@@ -1,5 +1,5 @@
 import Icon from '@mdi/react';
-import { mdiPlus } from '@mdi/js';
+import { mdiPlusThick } from '@mdi/js';
 
 import { header, menu, title as titleClass } from './Header.module.css';
 
@@ -11,7 +11,7 @@ function Header({onAddController}) {
     <nav>
       <ul className={menu}>
         <li><button onClick={onAddController}>
-          <Icon path={mdiPlus}
+          <Icon path={mdiPlusThick}
             size={1}
           />
        </button></li>
