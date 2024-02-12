@@ -1,5 +1,8 @@
 .drawer {
   display: grid;
+}
+
+.drawer.vertical {
   grid-template-rows: 1fr;
 }
 
@@ -7,25 +10,50 @@
   overflow: hidden;
 }
 
-.drawer:global(.animation-enter) {
+.drawer.vertical:global(.animation-enter) {
   grid-template-rows: 0fr;
 }
 
-.drawer:global(.animation-enter-active) {
+.drawer.vertical:global(.animation-enter-active) {
   grid-template-rows: 1fr;
   transition: grid-template-rows 1000ms ease-in-out;
 }
 
-.drawer:global(.animation-exit) {
+.drawer.vertical:global(.animation-exit) {
   transition: grid-template-rows 500ms ease-in-out;
   grid-template-rows: 1fr;
 }
 
-.drawer:global(.animation-exit-active) {
+.drawer.vertical:global(.animation-exit-active) {
   grid-template-rows: 0fr;
 }
 
-.drawer:global(.animation-exit-done) {
+.drawer.vertical:global(.animation-exit-done) {
   grid-template-rows: 0fr;
 }
 
+.drawer.horizontal {
+  grid-template-columns: 1fr;
+}
+
+.drawer.horizontal:global(.animation-enter) {
+  grid-template-columns: 0fr;
+}
+
+.drawer.horizontal:global(.animation-enter-active) {
+  grid-template-columns: 1fr;
+  transition: grid-template-columns 1000ms ease-in-out;
+}
+
+.drawer.horizontal:global(.animation-exit) {
+  transition: grid-template-columns 500ms ease-in-out;
+  grid-template-columns: 1fr;
+}
+
+.drawer.horizontal:global(.animation-exit-active) {
+  grid-template-columns: 0fr;
+}
+
+.drawer.horizontal:global(.animation-exit-done) {
+  grid-template-columns: 0fr;
+}

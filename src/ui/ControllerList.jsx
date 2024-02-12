@@ -118,8 +118,8 @@ function filterEntities(controller) {
 
 function ControllerHeader({host, onToggleController, onRemoveController}) {
   return <header className={header}>
-    <button onClick={onToggleController}><h3>{host}</h3></button>
-    <button onClick={onRemoveController} className={closeButton}>
+    <button tabIndex={0} onClick={onToggleController}><h3>{host}</h3></button>
+    <button tabIndex={0} onClick={onRemoveController} className={closeButton}>
       <Icon path={mdiCloseThick} size={1} />
     </button>
   </header>;

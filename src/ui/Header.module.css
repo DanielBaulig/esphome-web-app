@@ -1,4 +1,5 @@
 .header {
+  position: relative;
   display: flex;
   align-items: center;
 }
@@ -10,21 +11,77 @@
   font-size: 2rem;
 }
 
-.menu button {
-  min-height: 3rem;
-  min-width: 3rem;
-  border-radius: 100%;
-  background-color: var(--primary-color);
-  box-shadow: var(--box-shadow);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.menuToggle {
+  opacity: 0;
+  z-index: -1;
+  position: absolute;
 }
 
-.menu {
+.menuToggle:focus-visible ~ .menuToggleLabel {
+  outline: var(--focus-outline);
+  outline-offset: calc(var(--focus-outline-offset) - 3px);
+}
+
+nav.menu {
+  box-shadow:inset 0px 0px 0px 2px black;
+  position: absolute;
+  right: 0;
+  min-height: 3rem;
+  min-width: 3rem;
+  border-radius: 1.5rem;
+  background-color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: right;
+}
+
+ul.menu {
   list-style-type: none;
   padding: 0;
   margin: 0;
   display: flex;
-  flex-direction: row;
+  overflow: hidden;
+}
+
+.drawer {
+  display: grid;
+  transition: grid-template-columns 300ms ease-in-out;
+  grid-template-columns: 0fr;
+}
+
+.menu button {
+  border: none;
+  background-color: inherit;
+  min-width: 3rem;;
+  min-height: 3rem;
+  border-radius: 1.5rem;
+  cursor: pointer;
+}
+
+.menu button:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: calc(var(--focus-outline-offset) - 3px);
+}
+
+.menuToggle:checked + .drawer {
+  grid-template-columns: 1fr;
+}
+
+.menuToggleLabel {
+  cursor: pointer;
+  border: 3px outset black;
+  border-radius: 1.5rem;
+  min-width: 3rem;
+  min-height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.menuToggleLabel svg {
+  transition: transform 300ms ease-out;
+}
+
+.menuToggle:checked ~ .menuToggleLabel svg {
+  transform: rotate(225deg);
 }

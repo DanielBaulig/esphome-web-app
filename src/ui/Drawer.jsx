@@ -1,9 +1,14 @@
 import { CSSTransition } from 'react-transition-group';
 import { useRef } from 'react';
 
-import {drawer, content} from './Drawer.module.css';
+import {drawer, content, vertical, horizontal} from './Drawer.module.css';
 
-export default function Drawer({open, onDoneClosing, className, children}) {
+const directions = {
+  vertical: vertical,
+  horizontal: horizontal,
+};
+
+export default function Drawer({open, onDoneClosing, className, direction = 'vertical', children}) {
   const wrapperRef = useRef(null);
   return <CSSTransition
     nodeRef={wrapperRef}
@@ -18,7 +23,7 @@ export default function Drawer({open, onDoneClosing, className, children}) {
     unmountOnExit={true}
     mountOnEnter={true}
   >
-    <div className={`${className} ${drawer}`} ref={wrapperRef}>
+    <div className={`${className} ${drawer} ${directions[direction]}`} ref={wrapperRef}>
       <div className={content}>
         {children}
       </div>
