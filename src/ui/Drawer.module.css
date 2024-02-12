@@ -8,6 +8,8 @@
 
 .content {
   overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .drawer.vertical:global(.animation-enter) {

@@ -42,3 +42,9 @@
   border-top: 1px solid black;
   background-color: var(--card-background);
 }
+
+.card:last-child:after {
+  content: '';
+  flex-grow: 1;
+  margin-bottom: 0.3em;
+}
