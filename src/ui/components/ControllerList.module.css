@@ -1,0 +1,12 @@
+.controllerList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.closeButton {
+  cursor: pointer;
+  display: flex;
+  background-color: transparent;
+  border: none;
+}

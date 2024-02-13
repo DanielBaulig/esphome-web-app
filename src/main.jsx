@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import ControllerList from './ui/ControllerList.jsx';
+import ControllerList from './ui/components/ControllerList.jsx';
 import Header from './ui/Header.jsx';
 import ControllerRegistry from './ControllerRegistry.js';
 import Toast from './ui/Toast.jsx';

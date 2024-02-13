@@ -1,20 +1,17 @@
-import { memo, forwardRef, useId, useEffect, useState, useReducer, lazy, Suspense } from 'react';
-import Spinner from './Spinner';
-import Drawer from './Drawer';
-import StateEntity from './components/entities/StateEntity';
+import Spinner from '../Spinner';
+import DrawerCard from './DrawerCard';
+import StateEntity from './entities/StateEntity';
 import Icon from '@mdi/react';
 
+import { memo, forwardRef, useId, useEffect, useState, useReducer, lazy, Suspense } from 'react';
 import { mdiCloseThick } from '@mdi/js';
 
 import {
   controllerList,
-  listItem,
-  header,
-  card,
   closeButton,
 } from './ControllerList.module.css';
 
-import { filters } from '../config';
+import { filters } from '../../config';
 
 function delay(ms) {
   return new Promise((resolve, reject) => {
@@ -22,15 +19,15 @@ function delay(ms) {
   });
 }
 
-const LightComponent = lazy(() => import('./components/entities/LightComponent'));
-const BinarySensorEntity = lazy(() => import('./components/entities/BinarySensorEntity'));
-const ButtonEntity = lazy(() => import('./components/entities/ButtonEntity'));
-const SelectEntity = lazy(() => import('./components/entities/SelectEntity'));
-const SensorEntity = lazy(() => import('./components/entities/SensorEntity'));
-const SwitchEntity = lazy(() => import('./components/entities/SwitchEntity'));
-const FanEntity = lazy(() => import('./components/entities/FanEntity'));
-const CoverEntity = lazy(() => import('./components/entities/CoverEntity'));
-const NumberEntity = lazy(() => import('./components/entities/NumberEntity'));
+const LightComponent = lazy(() => import('./entities/LightComponent'));
+const BinarySensorEntity = lazy(() => import('./entities/BinarySensorEntity'));
+const ButtonEntity = lazy(() => import('./entities/ButtonEntity'));
+const SelectEntity = lazy(() => import('./entities/SelectEntity'));
+const SensorEntity = lazy(() => import('./entities/SensorEntity'));
+const SwitchEntity = lazy(() => import('./entities/SwitchEntity'));
+const FanEntity = lazy(() => import('./entities/FanEntity'));
+const CoverEntity = lazy(() => import('./entities/CoverEntity'));
+const NumberEntity = lazy(() => import('./entities/NumberEntity'));
 
 function getComponentForEntity(entity) {
   const loading = <Spinner />;
@@ -114,15 +111,6 @@ function filterEntities(controller) {
     }
     return initializedEntityFilters.some((filter) => filter(controller, entity))
   };
-}
-
-function ControllerHeader({host, onToggleController, onRemoveController}) {
-  return <header className={header}>
-    <button tabIndex={0} onClick={onToggleController}><h3>{host}</h3></button>
-    <button tabIndex={0} onClick={onRemoveController} className={closeButton}>
-      <Icon path={mdiCloseThick} size={1} />
-    </button>
-  </header>;
 }
 
 function ControllerEntities({entities}) {
@@ -212,29 +200,18 @@ function ControllerListItem({controller, onRemove}) {
     cardContent = <h3>⚠ Something went wrong</h3>;
   }
 
-  return <li className={listItem}>
-    <ControllerHeader
-      host={controller.host}
-      onRemoveController={onRemove}
-      onToggleController={() => {
-        if (!isConnected) {
-          actions.connect();
-        } else {
-          setDrawerClosing(true);
-        }
-      }}
-    />
-      <Drawer
-        className={card}
-        open={isConnected && !isDrawerClosing}
-        onDoneClosing={() => {
-          actions.disconnect();
-          setDrawerClosing(false);
-        }}
-      >
-        {cardContent}
-      </Drawer>
-  </li>;
+  return <li><DrawerCard
+    title={controller.host}
+    onBeginOpening={() => actions.connect()}
+    onDoneClosing={() => actions.disconnect()}
+    menu={
+      <button tabIndex={0} onClick={onRemove} className={closeButton}>
+        <Icon path={mdiCloseThick} size={1} />
+      </button>
+    }
+  >
+    {cardContent}
+  </DrawerCard></li>;
 }
 
 export default function ControllerList({controllers, onRemoveController}) {
