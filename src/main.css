@@ -44,9 +44,11 @@ h3 {
 
 button {
   background-color: var(--primary-color);
+  border-radius: 8px;
+  min-height: 3rem;
+  color: black;
   font-family: inherit;
   font-size: inherit;
-  color: black;
 }
 
 button:disabled {
