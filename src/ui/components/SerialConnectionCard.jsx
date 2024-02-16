@@ -4,7 +4,7 @@ import Improv from './Improv';
 
 import useImprovSerial from './useImprovSerial';
 
-import { useReducer, useEffect } from 'react';
+import { useReducer, useEffect, useState } from 'react';
 import { title as appTitle } from '../../config';
 
 import { mdiUsb, mdiCloseThick } from '@mdi/js';
@@ -79,6 +79,7 @@ export default function SerialConnectionCard({port, onRemove, open}) {
     productId,
   } = useBetterSerialPort(port);
   const [ improvState, improv ] = useImprovSerial(port);
+  const [ error, setError ] = useState(null);
   const { name } = improvState;
 
   useEffect(() => {
@@ -87,8 +88,12 @@ export default function SerialConnectionCard({port, onRemove, open}) {
         // If the port isn't open yet and the card won't render
         // opened anyway briefly open the port to read vendorId
         // and productId
-        await port.open({baudRate: useImprovSerial.baudRate})
-        await port.close();
+        try {
+          await port.open({baudRate: useImprovSerial.baudRate})
+          await port.close();
+        } catch(error) {
+          setError(error);
+        }
       }
     })();
     return async () => {
@@ -109,19 +114,38 @@ export default function SerialConnectionCard({port, onRemove, open}) {
     <Icon path={mdiCloseThick} size={0.8}/>
   </button>;
 
+  let content = <>
+    <Improv {...improvState} improv={improv} />
+  </>;
+
+  if (error) {
+    content = <>
+      <h3>⚠ Something went wrong.</h3>
+    </>;
+  }
+
+
   return <DrawerCard
     open={open}
     title={title}
     glyph={<Icon size={0.8} path={mdiUsb} />}
     menu={menu}
-    onBeginOpening={() => improv.initialize()}
+    onBeginOpening={async () => {
+      try {
+        await port.open({ baudRate: useImprovSerial.baudRate });
+        await improv.initialize()
+      } catch(error) {
+        setError(error);
+      }
+    }}
     onDoneClosing={async () =>  {
       await improv.close();
       if (port.opened) {
         await port.close();
       }
+      setError(null);
     }}
   >
-    <Improv {...improvState} improv={improv} />
+    {content}
   </DrawerCard>;
 }
