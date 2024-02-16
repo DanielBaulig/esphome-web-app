@@ -1,6 +1,7 @@
 import Icon from '@mdi/react';
 import { mdiLock, mdiWifiStrength4, mdiWifiStrength3, mdiWifiStrength2, mdiWifiStrength1, mdiWifiStrengthOutline } from '@mdi/js';
 import { useId, useState, useRef, useEffect } from 'react';
+import iif from '../../iif';
 
 import Drawer from '../Drawer';
 
@@ -24,10 +25,6 @@ function getRssiIcon(rssi) {
   }
 
   return mdiWifiStrengthOutline;
-}
-
-function iif(expr, vTrue, vFalse) {
-  return expr ? vTrue : vFalse;
 }
 
 function WifiSelectionRow({name, rssi, secured, radioGroup, onSelected}) {
