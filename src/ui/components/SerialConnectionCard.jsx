@@ -82,10 +82,21 @@ export default function SerialConnectionCard({port, onRemove, open}) {
   const { name } = improvState;
 
   useEffect(() => {
-    if (!port.opened) {
-      port.open({baudRate: useImprovSerial.baudRate});
-    }
-    return () => improv.close();
+    (async () => {
+      if (!port.opened && !open) {
+        // If the port isn't open yet and the card won't render
+        // opened anyway briefly open the port to read vendorId
+        // and productId
+        await port.open({baudRate: useImprovSerial.baudRate})
+        await port.close();
+      }
+    })();
+    return async () => {
+      await improv.close();
+      if (port.opened) {
+        await port.close();
+      }
+    };
   }, [port]);
 
   const title = name || (vendorId && productId && `usb-${vendorId}-${productId}`) || 'unidentified serial device';
@@ -104,7 +115,12 @@ export default function SerialConnectionCard({port, onRemove, open}) {
     glyph={<Icon size={0.8} path={mdiUsb} />}
     menu={menu}
     onBeginOpening={() => improv.initialize()}
-    onDoneClosing={() =>  improv.close()}
+    onDoneClosing={async () =>  {
+      await improv.close();
+      if (port.opened) {
+        await port.close();
+      }
+    }}
   >
     <Improv {...improvState} improv={improv} />
   </DrawerCard>;
