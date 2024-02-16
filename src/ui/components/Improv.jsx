@@ -23,13 +23,13 @@ export default function Improv({
   version,
   nextUrl,
   provisioned,
-  notDetected,
   ssids,
   improv
 }) {
   const [ isShowingWifiDialog, setShowWifiDialog] = useState(false);
 
-  if (notDetected && !initializing) {
+
+  if (!initialized && !initializing) {
     return (
       <EntitySection title="Wi-Fi" className={flex}>
         <Icon className={css(flex, flexFill)} path={mdiWifiCancel} size={4}/>

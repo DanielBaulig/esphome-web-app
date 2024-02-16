@@ -22,7 +22,6 @@ export default function useImprovSerial(port) {
           nextUrl,
           initialized: true,
           initializing: false,
-          notDetected: false,
         };
       }
       case 'scan_start':
@@ -53,7 +52,10 @@ export default function useImprovSerial(port) {
       case 'disconnect':
         return { ...state };
       case 'initialize_failed':
-        return {...state, notDetected: true, initializing: false };
+        return {
+          ...state,
+          initializing: false,
+        };
     }
     throw new Error(`Invalid action ${action.type}`);
   }, {ssids: []});
