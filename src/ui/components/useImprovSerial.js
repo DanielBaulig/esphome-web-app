@@ -72,7 +72,7 @@ export default function useImprovSerial(port) {
     }
 
     if (!port.writable || !port.readable) {
-      await port.open({baudRate: 115200});
+      await port.open({baudRate: useImprovSerial.baudRate});
     }
     const improv = new ImprovSerial(port, console);
     improv.addEventListener('disconnect', onDisconnect, { once: true });
@@ -122,4 +122,4 @@ export default function useImprovSerial(port) {
   }];
 }
 
-
+useImprovSerial.baudRate = 115200;

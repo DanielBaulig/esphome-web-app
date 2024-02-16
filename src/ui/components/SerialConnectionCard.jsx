@@ -77,7 +77,7 @@ export default function SerialConnectionCard({port, onRemove, open}) {
 
   useEffect(() => {
     if (!port.opened) {
-      port.open({baudRate: 115400});
+      port.open({baudRate: useImprovSerial.baudRate});
     }
     return async () => {
       if (improv) {
