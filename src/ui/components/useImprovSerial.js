@@ -14,14 +14,10 @@ export default function useImprovSerial(port) {
           initializing: true,
         }
       case 'initialize_end': {
-        const { name, info, chipFamily, firmware, version } = action.info;
-        const { state: improvState, nextUrl } = improvRef.current;
+        const { improvState, nextUrl, info } = action;
         return {
           ...state,
-          name,
-          chipFamily,
-          firmware,
-          version,
+          ...info,
           provisioned: improvState === 4,
           nextUrl,
           initialized: true,
@@ -35,10 +31,25 @@ export default function useImprovSerial(port) {
         return { ...state, scanning: false, ssids: action.ssids }
       case 'provision_start':
         return { ...state, provisioning: true, error: null };
-      case 'provision_end':
-        return { ...state, provisioning: false, provisioned: true, nextUrl: action.nextUrl };
-      case 'provision_failed':
-        return { ...state, provisioning: false, provisioned: false, nextUrl: null, error: action.error };
+      case 'provision_end': {
+        const { nextUrl } = action;
+        return {
+          ...state,
+          nextUrl,
+          provisioning: false,
+          provisioned: true,
+        };
+      }
+      case 'provision_failed': {
+        const { error } = action;
+        return {
+          ...state,
+          error,
+          provisioning: false,
+          provisioned: false,
+          nextUrl: null,
+        };
+      }
       case 'disconnect':
         return { ...state };
       case 'initialize_failed':
@@ -83,7 +94,12 @@ export default function useImprovSerial(port) {
     try {
       dispatch({ type: 'initialize_start' });
       const info = await improv.initialize();
-      dispatch({ type: 'initialize_end', info });
+      dispatch({
+        type: 'initialize_end',
+        info,
+        nextUrl: improv.nextUrl,
+        improvState: improv.state
+      });
     } catch(error) {
       cleanup();
       dispatch({ type: 'initialize_failed', error });
