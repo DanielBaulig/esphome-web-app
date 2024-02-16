@@ -4,14 +4,14 @@ import { useReducer, useState, useEffect, useCallback } from 'react';
 
 import { drawer, card, header, title as titleClass } from './DrawerCard.module.css';
 
-function DrawerCardHeader({title, onToggleDrawer, children}) {
-  return <header className={header}>
+function DrawerCardHeader({title, glyph, onToggleDrawer, children}) {
+  return <header className={header}>{glyph}
     <button className={titleClass} tabIndex={0} onClick={onToggleDrawer}><h3>{title}</h3></button>
     {children}
   </header>;
 }
 
-export default function DrawerCard({open, onToggleDrawer, onBeginOpening, onDoneClosing, title, menu, children}) {
+export default function DrawerCard({open, glyph, onToggleDrawer, onBeginOpening, onDoneClosing, title, menu, children}) {
   const [{closing, closed}, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case 'finishClosing':
@@ -39,7 +39,7 @@ export default function DrawerCard({open, onToggleDrawer, onBeginOpening, onDone
 
   useEffect(() => {
     if (open) {
-      onBeginOpening();
+      onBeginOpening?.();
       dispatch({ type: 'beginOpening' });
     } else if (!closed) {
       dispatch({ type: 'beginClosing' });
@@ -48,6 +48,7 @@ export default function DrawerCard({open, onToggleDrawer, onBeginOpening, onDone
 
   return <div className={card}>
     <DrawerCardHeader
+      glyph={glyph}
       title={title}
       onToggleDrawer={onToggleDrawer}
     >
@@ -57,7 +58,7 @@ export default function DrawerCard({open, onToggleDrawer, onBeginOpening, onDone
       className={drawer}
       open={open && ! closing}
       onDoneClosing={() => {
-        onDoneClosing();
+        onDoneClosing?.();
         dispatch({type: 'finishClosing'});
       }}
     >

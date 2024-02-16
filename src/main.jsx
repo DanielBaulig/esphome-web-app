@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import ControllerList from './ui/components/ControllerList.jsx';
+import SerialConnectionList from './ui/components/SerialConnectionList.jsx';
 import Header from './ui/Header.jsx';
 import ControllerRegistry from './ControllerRegistry.js';
 import Toast from './ui/Toast.jsx';
@@ -142,9 +143,13 @@ function renderRoot() {
   </Toast>;
   reactRoot.render(
     <>
-      <Header onAddController={() => promptAndRegisterHost()}/>
+      <Header
+        onAddController={() => promptAndRegisterHost()}
+      />
       {strictMixedContentWarning}
       <main>
+        <SerialConnectionList />
+        <div>&nbsp;</div>
         <ControllerList
           controllers={getRegisteredControllers()}
           onRemoveController={controller => {
@@ -157,6 +162,7 @@ function renderRoot() {
     </>
   );
 }
+
 
 const reactRoot = ReactDOM.createRoot(
   document.body.appendChild(

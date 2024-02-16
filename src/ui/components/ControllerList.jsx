@@ -206,7 +206,7 @@ function ControllerListItem({controller, onRemove}) {
     onDoneClosing={() => actions.disconnect()}
     menu={
       <button tabIndex={0} onClick={onRemove} className={closeButton}>
-        <Icon path={mdiCloseThick} size={1} />
+        <Icon path={mdiCloseThick} size={0.8} />
       </button>
     }
   >

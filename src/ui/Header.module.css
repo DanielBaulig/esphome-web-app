@@ -56,6 +56,9 @@ ul.menu {
   min-height: 3rem;
   border-radius: 1.5rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .menu button:focus-visible {

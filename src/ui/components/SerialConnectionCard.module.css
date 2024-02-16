@@ -1,0 +1,24 @@
+.active {
+  color: var(--active-color);
+}
+
+.fill {
+  flex-basis: 100%;
+}
+
+.flex {
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+a.flex {
+  text-decoration: inherit;
+}
+
+.closeButton {
+  background-color: transparent;
+  border: none;
+  display: flex;
+  cursor: pointer;
+}

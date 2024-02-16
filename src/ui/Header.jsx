@@ -1,13 +1,14 @@
 import Icon from '@mdi/react';
 import Drawer from './Drawer';
+import SerialConnectButton from './SerialConnectButton';
 
-import { mdiPlusThick, mdiWifiPlus } from '@mdi/js';
+import { mdiPlusThick, mdiWifiPlus, mdiUsb } from '@mdi/js';
 import { useState, useId, useRef } from 'react';
 import { drawer, header, menu, menuToggle, menuToggleLabel, title as titleClass } from './Header.module.css';
 
 import { title } from '../config';
 
-function Header({onAddController}) {
+function Header({onAddController, onConnectSerial}) {
   // We want the menu items to be ordered in reverse
   // in their grid. I.e. the logically first item
   // should render on the right.
@@ -53,6 +54,13 @@ function Header({onAddController}) {
                 size={1}
               />
             </button>
+          </li>
+          <li onClick={onConnectSerial} style={{order: order()}}>
+            <SerialConnectButton tabIndex={menuButtonTabIndex}>
+              <Icon path={mdiUsb}
+                size={1}
+              />
+            </SerialConnectButton>
           </li>
         </ul>
       </div>

@@ -2,10 +2,11 @@
   display: flex;
   align-items: center;
   background-color: var(--primary-color);
+  padding: 0 0 0 0.5rem;
 }
 
 .title {
-  padding: 0 1rem;
+  padding: 0 0 0 0.25rem;
   flex-grow: 1;
   text-align: left;
   user-select: text;
@@ -28,6 +29,7 @@
   justify-content: center;
   border-top: 1px solid black;
   background-color: var(--card-background);
+  grid-template-columns: 1fr;
 }
 
 .drawer:last-child:after {

@@ -6,6 +6,7 @@
 
 body {
   --primary-color: lightsteelblue;
+  --active-color: steelblue;
   --primary-background: lightslategray;
   --primary-background-30: #d5dadf; /* 30% lightslategray */
   --card-background: #fbfbfb;
@@ -42,7 +43,11 @@ h3 {
 }
 
 button {
+  background-color: var(--primary-color);
   font-family: inherit;
   font-size: inherit;
   color: black;
+}
+button:disabled {
+  background-color: var(--primary-background-30);
 }

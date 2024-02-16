@@ -8,7 +8,7 @@ const directions = {
   horizontal: horizontal,
 };
 
-export default function Drawer({open, onDoneClosing, className, direction = 'vertical', children}) {
+export default function Drawer({open, onDoneClosing, onDoneOpening, className, direction = 'vertical', children}) {
   const wrapperRef = useRef(null);
   return <CSSTransition
     nodeRef={wrapperRef}
@@ -20,6 +20,7 @@ export default function Drawer({open, onDoneClosing, className, direction = 'ver
     timeout={1200}
     appear={true}
     onExited={onDoneClosing}
+    onEntered={onDoneOpening}
     unmountOnExit={true}
     mountOnEnter={true}
   >
