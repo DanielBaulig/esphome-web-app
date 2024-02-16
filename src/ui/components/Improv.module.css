@@ -1,0 +1,15 @@
+.fill {
+  flex-basis: 100%;
+}
+
+.flex {
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+a.flex {
+  text-decoration: inherit;
+}
+
+

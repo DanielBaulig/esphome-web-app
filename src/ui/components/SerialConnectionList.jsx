@@ -57,8 +57,6 @@ export default function SerialConnectionList({showPort}) {
     return null;
   }
 
-  console.log(showPort, ports);
-
   return <div className={list}>
     {ports.map((port) => <SerialConnectionCard
       port={port}
