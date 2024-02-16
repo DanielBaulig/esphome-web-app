@@ -50,15 +50,19 @@ function useSerialPorts() {
   return ports;
 }
 
-export default function SerialConnectionList() {
+export default function SerialConnectionList({showPort}) {
   const ports = useSerialPorts();
 
   if (!ports.length) {
     return null;
   }
 
-  return <div className={list}>{ports.map((port) => <SerialConnectionCard
+  console.log(showPort, ports);
+
+  return <div className={list}>
+    {ports.map((port) => <SerialConnectionCard
       port={port}
+      open={showPort === port}
       key={getPortKey(port)}
     />)}
   </div>;

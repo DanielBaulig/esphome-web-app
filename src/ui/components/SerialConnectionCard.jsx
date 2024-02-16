@@ -198,7 +198,7 @@ function useBetterImprovSerial(port) {
   }];
 }
 
-export default function SerialConnectionCard({port, onRemove}) {
+export default function SerialConnectionCard({port, onRemove, open}) {
   const state = useBetterSerialPort(port);
   const [ improvState, improv ] = useBetterImprovSerial(port);
   const [ wifiSelection, setWifiSelection] = useState(false);
@@ -280,6 +280,7 @@ export default function SerialConnectionCard({port, onRemove}) {
   </button>;
 
   return <DrawerCard
+    open={open}
     title={title}
     glyph={<Icon size={0.8} path={mdiUsb} />}
     menu={menu}

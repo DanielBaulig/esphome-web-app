@@ -6,6 +6,8 @@ import Header from './ui/Header.jsx';
 import ControllerRegistry from './ControllerRegistry.js';
 import Toast from './ui/Toast.jsx';
 
+import { useState } from 'react';
+
 import { insecureOrigin } from './config';
 
 function privateAddressSpaceFetch(...args) {
@@ -130,7 +132,9 @@ function promptAndRegisterHost() {
   registerHost(host);
 }
 
-function renderRoot() {
+function App() {
+  const [mostRecentPort, setMostRecentPort] = useState(null);
+
   let href = insecureOrigin;
   if (!href) {
     const url = new URL(location.href);
@@ -141,24 +145,32 @@ function renderRoot() {
   const strictMixedContentWarning = <Toast style="warning" visible={hasStrictMixedContent}>
     This user agent appears to  not allow access to private network hosts from secure origins. Please try loading the <a href={href}>insecure origin</a> instead.
   </Toast>;
-  reactRoot.render(
-    <>
-      <Header
-        onAddController={() => promptAndRegisterHost()}
+
+  return <>
+    <Header
+      onAddController={() => promptAndRegisterHost()}
+      onConnectSerialPort={(port) => setMostRecentPort(port)}
+    />
+    {strictMixedContentWarning}
+    <main>
+      <SerialConnectionList
+        showPort={mostRecentPort}
       />
-      {strictMixedContentWarning}
-      <main>
-        <SerialConnectionList />
-        <ControllerList
-          controllers={getRegisteredControllers()}
-          onRemoveController={controller => {
-            if (confirm('Are you sure you want to remove this controller?')) {
-              removeHost(controller.host) ;
-            }
-          }}
-        />
-      </main>
-    </>
+      <ControllerList
+        controllers={getRegisteredControllers()}
+        onRemoveController={controller => {
+          if (confirm('Are you sure you want to remove this controller?')) {
+            removeHost(controller.host) ;
+          }
+        }}
+      />
+    </main>
+  </>;
+}
+
+function renderRoot() {
+  reactRoot.render(
+    <App />
   );
 }
 

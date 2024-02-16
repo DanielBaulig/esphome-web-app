@@ -8,7 +8,7 @@ import { drawer, header, menu, menuToggle, menuToggleLabel, title as titleClass 
 
 import { title } from '../config';
 
-function Header({onAddController, onConnectSerial}) {
+function Header({onAddController, onConnectSerialPort}) {
   // We want the menu items to be ordered in reverse
   // in their grid. I.e. the logically first item
   // should render on the right.
@@ -55,8 +55,11 @@ function Header({onAddController, onConnectSerial}) {
               />
             </button>
           </li>
-          <li onClick={onConnectSerial} style={{order: order()}}>
-            <SerialConnectButton tabIndex={menuButtonTabIndex}>
+          <li style={{order: order()}}>
+            <SerialConnectButton
+              tabIndex={menuButtonTabIndex}
+              onConnectPort={(port) => onConnectSerialPort(port)}
+            >
               <Icon path={mdiUsb}
                 size={1}
               />
