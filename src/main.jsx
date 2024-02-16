@@ -175,10 +175,8 @@ function renderRoot() {
 }
 
 
-const reactRoot = ReactDOM.createRoot(
-  document.body.appendChild(
-    document.createElement('div')
-  )
-);
+const reactRoot = ReactDOM.createRoot((root =>
+  document.body.replaceChildren(root) || root
+)(document.createElement('div')));
 
 renderRoot();

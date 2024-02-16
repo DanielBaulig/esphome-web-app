@@ -48,6 +48,7 @@ button {
   font-size: inherit;
   color: black;
 }
+
 button:disabled {
   background-color: var(--primary-background-30);
 }

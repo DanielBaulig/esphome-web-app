@@ -72,22 +72,21 @@ function useBetterSerialPort(port) {
 }
 
 export default function SerialConnectionCard({port, onRemove, open}) {
-  const state = useBetterSerialPort(port);
+  const {
+    opened,
+    connected,
+    vendorId,
+    productId,
+  } = useBetterSerialPort(port);
   const [ improvState, improv ] = useImprovSerial(port);
+  const { name } = improvState;
 
   useEffect(() => {
     if (!port.opened) {
       port.open({baudRate: useImprovSerial.baudRate});
     }
-    return async () => {
-      if (improv) {
-        await improv.close();
-      }
-    };
+    return () => improv.close();
   }, [port]);
-
-  const { opened, connected, vendorId, productId } = state;
-  const { name } = improvState;
 
   const title = name || (vendorId && productId && `usb-${vendorId}-${productId}`) || 'unidentified serial device';
 
@@ -104,12 +103,8 @@ export default function SerialConnectionCard({port, onRemove, open}) {
     title={title}
     glyph={<Icon size={0.8} path={mdiUsb} />}
     menu={menu}
-    onBeginOpening={async () => {
-      await improv.initialize();
-    }}
-    onDoneClosing={async () =>  {
-      await improv.close();
-    }}
+    onBeginOpening={() => improv.initialize()}
+    onDoneClosing={() =>  improv.close()}
   >
     <Improv {...improvState} improv={improv} />
   </DrawerCard>;
