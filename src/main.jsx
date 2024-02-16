@@ -149,7 +149,6 @@ function renderRoot() {
       {strictMixedContentWarning}
       <main>
         <SerialConnectionList />
-        <div>&nbsp;</div>
         <ControllerList
           controllers={getRegisteredControllers()}
           onRemoveController={controller => {

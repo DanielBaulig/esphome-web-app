@@ -2,6 +2,8 @@ import SerialConnectionCard from './SerialConnectionCard';
 import betterSerial from '../../BetterSerialPorts';
 import { useState, useEffect } from 'react';
 
+import { list } from './SerialConnectionList.module.css';
+
 const portKeys = new WeakMap();
 let currentPortKey = 0;
 
@@ -17,6 +19,11 @@ function getPortKey(port) {
 
 function useSerialPorts() {
   const serial = betterSerial;
+
+  if (!serial) {
+    return [];
+  }
+
   const [ports, setPorts] = useState([]);
 
   async function updatePorts() {
@@ -46,8 +53,13 @@ function useSerialPorts() {
 export default function SerialConnectionList() {
   const ports = useSerialPorts();
 
-  return ports.map((port) => <SerialConnectionCard
-    port={port}
-    key={getPortKey(port)}
-  />);
+  if (!ports.length) {
+    return null;
+  }
+
+  return <div className={list}>{ports.map((port) => <SerialConnectionCard
+      port={port}
+      key={getPortKey(port)}
+    />)}
+  </div>;
 }
