@@ -1,0 +1,22 @@
+.radialProgess {
+  display: flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 80px;
+}
+
+.radialProgess div {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  padding: 8px;
+  background-image: conic-gradient(#000 360deg, transparent 0deg);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+}

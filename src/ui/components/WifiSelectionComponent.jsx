@@ -1,9 +1,11 @@
 import Icon from '@mdi/react';
-import { mdiLock, mdiWifiStrength4, mdiWifiStrength3, mdiWifiStrength2, mdiWifiStrength1, mdiWifiStrengthOutline } from '@mdi/js';
+import { mdiWifiStrengthAlertOutline, mdiLock, mdiWifiStrength4, mdiWifiStrength3, mdiWifiStrength2, mdiWifiStrength1, mdiWifiStrengthOutline } from '@mdi/js';
 import { useId, useState, useRef, useEffect } from 'react';
 import iif from '../../iif';
 
 import Drawer from '../Drawer';
+import Spinner from '../Spinner';
+import {flex} from '../utility.module.css';
 
 import {row, list, radio, insecure, password as passwordClass, drawer, main } from './WifiSelectionComponent.module.css';
 
@@ -49,7 +51,7 @@ function WifiSelectionRow({name, rssi, secured, radioGroup, onSelected}) {
   </>;
 }
 
-export default function WifiSelectionComponent({ssids, onCancel, onConnect}) {
+export default function WifiSelectionComponent({ssids, scanning, onCancel, onConnect}) {
   const passwordRef = useRef(null);
   const [password, setPassword] = useState('');
   const [promptPassword, setPromptPassword] = useState(false);
@@ -58,11 +60,20 @@ export default function WifiSelectionComponent({ssids, onCancel, onConnect}) {
 
   return <>
     <div className={main}>
-      <ul className={list}>{ssids.sort((one, two) => two.rssi - one.rssi).map(
-        (ssid, idx) => <li key={idx}>
-          <WifiSelectionRow radioGroup={id} name={ssid.name} rssi={ssid.rssi} secured={ssid.secured} onSelected={() => setSsid(ssid)} />
-        </li>
-      )}</ul>
+      <ul className={list}>
+        {ssids.sort((one, two) => two.rssi - one.rssi).map(
+          (ssid, idx) => <li key={idx}>
+            <WifiSelectionRow radioGroup={id} name={ssid.name} rssi={ssid.rssi} secured={ssid.secured} onSelected={() => setSsid(ssid)} />
+          </li>
+        )}
+        {iif(
+          ssids.length === 0,
+          <li className={flex}>{
+            scanning ?
+              <Spinner /> :
+              <Icon path={mdiWifiStrengthAlertOutline} size={3.35} style={{color: 'var(--section-background)'}} />
+          }</li>)}
+      </ul>
       <Drawer
         open={promptPassword}
         className={drawer}

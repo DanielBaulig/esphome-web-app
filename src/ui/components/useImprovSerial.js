@@ -6,7 +6,14 @@ export default function useImprovSerial(port) {
   const improvRef = useRef(null);
 
   const [state, dispatch] = useReducer((state, action) => {
+    console.log(action.type);
     switch(action.type) {
+      case 'reset': {
+        return {
+          ...state,
+          initialized: false,
+        };
+      }
       case 'initialize_start':
         return {
           ...state,
@@ -22,6 +29,15 @@ export default function useImprovSerial(port) {
           nextUrl,
           initialized: true,
           initializing: false,
+        };
+      }
+      case 'initialize_failed': {
+        const { error } = action;
+        return {
+          ...state,
+          initialized: false,
+          initializing: false,
+          error
         };
       }
       case 'scan_start':
@@ -49,13 +65,6 @@ export default function useImprovSerial(port) {
           nextUrl: null,
         };
       }
-      case 'disconnect':
-        return { ...state };
-      case 'initialize_failed':
-        return {
-          ...state,
-          initializing: false,
-        };
     }
     throw new Error(`Invalid action ${action.type}`);
   }, {ssids: []});
@@ -70,7 +79,6 @@ export default function useImprovSerial(port) {
 
     function onDisconnect() {
       cleanup();
-      dispatch({ type: 'disconnect' });
     }
 
     function cleanup() {
@@ -84,17 +92,17 @@ export default function useImprovSerial(port) {
       improvRef.current = null;
     }
 
-    if (!port.writable || !port.readable) {
-      await port.open({baudRate: useImprovSerial.baudRate});
-    }
-    const improv = new ImprovSerial(port, console);
-    improv.addEventListener('disconnect', onDisconnect, { once: true });
-    improv.addEventListener('state-change', onStateChange);
-    improv.addEventListener('error-change', onErrorChange);
-    improvRef.current = improv;
-
+    dispatch({ type: 'initialize_start' });
     try {
-      dispatch({ type: 'initialize_start' });
+      if (!port.writable || !port.readable) {
+        await port.open({baudRate: useImprovSerial.baudRate});
+      }
+      const improv = new ImprovSerial(port, console);
+      improv.addEventListener('disconnect', onDisconnect, { once: true });
+      improv.addEventListener('state-change', onStateChange);
+      improv.addEventListener('error-change', onErrorChange);
+      improvRef.current = improv;
+
       const info = await improv.initialize();
       dispatch({
         type: 'initialize_end',
@@ -103,40 +111,58 @@ export default function useImprovSerial(port) {
         improvState: improv.state
       });
     } catch(error) {
+      console.error(error);
       cleanup();
       dispatch({ type: 'initialize_failed', error });
     }
   }
 
-  return [state, {
-    async initialize() {
-      return initialize();
-    },
-    async close() {
-      if (improvRef.current) {
-        return improvRef.current.close();
+  async function withImprovInstance(fn) {
+    const initialized = !!improvRef.current;
+    if (!initialized) {
+      console.log('initializing improv');
+      await initialize();
+    }
+    try {
+      console.log('executing withImprovInstance');
+      return await fn();
+    } finally {
+      console.log('done');
+      if (!initialized && improvRef.current) {
+        console.log('cleaning up');
+        await improvRef.current.close();
       }
+    }
+  }
+
+  return [state, {
+    async finger(options) {
+      if (options?.reset) {
+        dispatch({ type: 'reset' });
+      }
+      await withImprovInstance(async () => {});
     },
     async scan() {
-      if (!improvRef.current) {
-        await initialize();
-      }
       dispatch({ type: 'scan_start' });
-      const ssids = await improvRef.current.scan();
-      dispatch({ type: 'scan_end', ssids });
+      return withImprovInstance(async () => {
+        const ssids = await improvRef.current.scan();
+        dispatch({ type: 'scan_end', ssids });
+      });
     },
     async provision(ssid, password, timeout) {
-      if (!improvRef.current) {
-        await initialize();
-      }
       dispatch({ type: 'provision_start' });
-      try {
-        await improvRef.current.provision(ssid, password, timeout);
-      } catch(error) {
-        return dispatch({ type: 'provision_failed', error });
-      }
-      dispatch({ type: 'provision_end', nextUrl: improvRef.current.nextUrl });
-    }
+      return withImprovInstance(async () => {
+        try {
+          await improvRef.current.provision(ssid, password, timeout);
+        } catch(error) {
+          return dispatch({ type: 'provision_failed', error });
+        }
+        dispatch({
+          type: 'provision_end',
+          nextUrl: improvRef.current.nextUrl
+        });
+      });
+    },
   }];
 }
 

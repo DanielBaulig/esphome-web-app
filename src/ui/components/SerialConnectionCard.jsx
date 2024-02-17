@@ -1,8 +1,13 @@
 import Icon from '@mdi/react'
 import DrawerCard from './DrawerCard';
-import Improv from './Improv';
+import ImprovWifi from './ImprovWifi';
+import FirmwareFlasher from './FirmwareFlasher';
+import EntitySection from './EntitySection';
+import EntityCard from './EntityCard';
 
 import useImprovSerial from './useImprovSerial';
+import iif from '../../iif';
+import sleep from '../../sleep';
 
 import { useReducer, useEffect, useState } from 'react';
 import { title as appTitle } from '../../config';
@@ -10,6 +15,7 @@ import { title as appTitle } from '../../config';
 import { mdiUsb, mdiCloseThick } from '@mdi/js';
 
 import { closeButton } from './SerialConnectionCard.module.css';
+import { flex, flexFill } from '../utility.module.css';
 
 function useBetterSerialPort(port) {
   function initialize(port) {
@@ -80,7 +86,7 @@ export default function SerialConnectionCard({port, onRemove, open}) {
   } = useBetterSerialPort(port);
   const [ improvState, improv ] = useImprovSerial(port);
   const [ error, setError ] = useState(null);
-  const { name } = improvState;
+  const { name, chipFamily, firmware, version } = improvState;
 
   useEffect(() => {
     (async () => {
@@ -92,12 +98,12 @@ export default function SerialConnectionCard({port, onRemove, open}) {
           await port.open({baudRate: useImprovSerial.baudRate})
           await port.close();
         } catch(error) {
+          console.error(erro);
           setError(error);
         }
       }
     })();
     return async () => {
-      await improv.close();
       if (port.opened) {
         await port.close();
       }
@@ -115,7 +121,33 @@ export default function SerialConnectionCard({port, onRemove, open}) {
   </button>;
 
   let content = <>
-    <Improv {...improvState} improv={improv} />
+    <EntityCard title="Firmware" className={flexFill}>
+      {iif(chipFamily && firmware && version, <div className={flex}>
+        {iif(chipFamily, <EntityCard title="Chip" className={flex}>
+          <h3>{chipFamily}</h3>
+        </EntityCard>)}
+        {iif(firmware, <EntityCard title="Name" className={flex}>
+          <h3>{firmware}</h3>
+        </EntityCard>)}
+        {iif(version, <EntityCard title="Version" className={flex}>
+          <h3>{version}</h3>
+        </EntityCard>)}
+      </div>)}
+        <FirmwareFlasher
+          port={port}
+          label={!!firmware ? 'Update Firmware' : 'Install Firmware'}
+          onFirmwareUpdateDone={async () => {
+          try {
+            await improv.finger({ reset: true });
+          } catch(error) {
+            console.error(error);
+            setError(error);
+          }
+        }}/>
+    </EntityCard>
+    <EntitySection title="Wi-Fi" className={flex}>
+      <ImprovWifi {...improvState} improv={improv} />
+    </EntitySection>
   </>;
 
   if (error) {
@@ -133,13 +165,13 @@ export default function SerialConnectionCard({port, onRemove, open}) {
     onBeginOpening={async () => {
       try {
         await port.open({ baudRate: useImprovSerial.baudRate });
-        await improv.initialize()
+        await improv.finger();
       } catch(error) {
+        console.error(error);
         setError(error);
       }
     }}
     onDoneClosing={async () =>  {
-      await improv.close();
       if (port.opened) {
         await port.close();
       }

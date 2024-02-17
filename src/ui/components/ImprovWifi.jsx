@@ -11,17 +11,15 @@ import { mdiWifiCheck, mdiWifiCog, mdiWifiCancel } from '@mdi/js';
 import { useState } from 'react';
 
 import { flex, flexFill } from '../utility.module.css';
-import { link } from './Improv.module.css';
+import { link } from './ImprovWifi.module.css';
 
-export default function Improv({
+export default function ImprovWifi({
   initializing,
   error,
   provisioning,
   initialized,
-  firmware,
-  chipFamily,
-  version,
   nextUrl,
+  scanning,
   provisioned,
   ssids,
   improv
@@ -30,19 +28,32 @@ export default function Improv({
 
 
   if (!initialized && !initializing) {
-    return (
-      <EntitySection title="Wi-Fi" className={flex}>
-        <Icon className={css(flex, flexFill)} path={mdiWifiCancel} size={4}/>
+    return <>
+        <Icon
+          className={css(flex, flexFill)}
+          path={mdiWifiCancel}
+          size={4}
+        />
         <h3 className={flex}>No Improv detected</h3>
-      </EntitySection>
-    );
+    </>;
   }
 
-  if (!initialized) {
+  if (!initialized || provisioning) {
     return <Spinner className={css(flex, flexFill)} />;
   }
 
-  let wifiSection = <>
+  if (isShowingWifiDialog) {
+    return <WifiSelectionComponent
+      scanning={scanning}
+      ssids={ssids}
+      onCancel={() => setShowWifiDialog(false)}
+      onConnect={async (ssid, password) => {
+        setShowWifiDialog(false);
+        await improv.provision(ssid, password, 60000);
+      }}
+    />
+  }
+  return <>
     <Icon
       className={css(flex, flexFill)}
       size={4}
@@ -68,37 +79,5 @@ export default function Improv({
         <button>Visit device</button>
       </a>
     )}
-  </>;
-
-  if (isShowingWifiDialog) {
-    wifiSection = <WifiSelectionComponent
-      ssids={ssids}
-      onCancel={() => setShowWifiDialog(false)}
-      onConnect={(ssid, password) => {
-        improv.provision(ssid, password, 60000);
-        setShowWifiDialog(false);
-      }}
-    />
-  }
-
-  if (provisioning) {
-    wifiSection = <>
-      <Spinner />
-    </>;
-  }
-
-  return <>
-    <EntityCard title="Chip" className={flex}>
-      <h3>{chipFamily}</h3>
-    </EntityCard>
-    <EntityCard title="Firmware" className={flex}>
-      <h3>{firmware}</h3>
-    </EntityCard>
-    <EntityCard title="Version" className={flex}>
-      <h3>{version}</h3>
-    </EntityCard>
-    <EntitySection title="Wi-Fi" className={flex}>
-      {wifiSection}
-    </EntitySection>
   </>;
 }
