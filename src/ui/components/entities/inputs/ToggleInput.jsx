@@ -11,6 +11,6 @@ export default function ToggleInput({checked, onChange}) {
       onChange={onChange}
       id={id}
     />
-    <label for={id}></label>
+    <label htmlFor={id}></label>
   </span>;
 }
