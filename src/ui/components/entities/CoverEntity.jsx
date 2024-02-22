@@ -5,15 +5,25 @@ import RangeInput from './inputs/RangeInput';
 import useEntityState from './useEntityState';
 import getEntityLabel from './getEntityLabel';
 
+import { useState, useEffect } from 'react';
 import { tilt, position, state as stateClass } from './CoverEntity.module.css';
 
 export default function CoverEntity({entity}) {
   const state = useEntityState(entity);
-  console.log('Cover', state);
+  const [seenPositionTrait, setSeenPositionTrait] = useState(0 < state.value && state.value < 1);
 
   const currentState = state.current_operation !== 'IDLE' ?
     state.current_operation :
     state.state;
+
+  useEffect(() => {
+    if (seenPositionTrait) {
+      return;
+    }
+    if (0 < state.position && state.position < 1) {
+      setSeenPositionTrait(true);
+    }
+  }, [state.position]);
 
   const buttons = <>
     <button onClick={() => entity.open()}>Open</button>
@@ -35,11 +45,8 @@ export default function CoverEntity({entity}) {
     </EntitySection>;
   }
 
-  // Currently we always have value, even if Cover does not support
-  // position reporting.
-  // See https://github.com/esphome/issues/issues/5472
   let positionControls;
-  if ('value' in state) {
+  if ('position' in state || seenPositionTrait) {
     positionControls = <RangeInput
       className={position}
       value={state.value}
