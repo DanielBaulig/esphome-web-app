@@ -1,6 +1,7 @@
 import BrightnessInput from './inputs/BrightnessInput';
 import LightColorComponent from './LightColorComponent';
 import useEntityState from './useEntityState';
+import iif from './../../../iif';
 
 import { 
   lightComponent, 
@@ -22,15 +23,15 @@ export default function LightComponent({
   let controls = null;
   if (state.state === 'ON') {
     controls = <>
-      <li>
+      {iif('color' in state, <li>
         <LightColorComponent 
           colorMode={state.color_mode} 
           colorTemp={state.color_temp} 
           color={state.color} 
           onTurnOn={entity.turnOn.bind(entity)}
         />
-      </li>
-      <li>
+      </li>)}
+      {iif('brightness' in state, <li>
         <fieldset className={brightness}>
           <legend>Brightness</legend>
           <BrightnessInput 
@@ -38,7 +39,7 @@ export default function LightComponent({
             onChange={value => entity.turnOn({brightness: value})}
           />
         </fieldset>
-      </li>
+      </li>)}
     </>;
   }
 
