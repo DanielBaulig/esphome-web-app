@@ -32,7 +32,7 @@ JSON_REPLACE_VERSION="((fs) => fs.writeFileSync('package.json', JSON.stringify({
 node -e "$JSON_REPLACE_VERSION"
 echo "Updated package.json"
 
-git commit --allow-empty -m "Release $VERSION_LABEL"
+git commit --allow-empty -am "Release $VERSION_LABEL"
 if [ $? -ne 0 ]; then
   echo "Failed creating release commit. Aborting."
   exit 1
