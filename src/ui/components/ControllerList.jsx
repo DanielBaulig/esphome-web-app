@@ -3,8 +3,8 @@ import DrawerCard from './DrawerCard';
 import StateEntity from './entities/StateEntity';
 import Icon from '@mdi/react';
 
-import { memo, forwardRef, useId, useEffect, useState, useReducer, lazy, Suspense } from 'react';
-import { mdiCloseThick } from '@mdi/js';
+import { useRef, useEffect, useState, useReducer, lazy, Suspense } from 'react';
+import { mdiCloseThick, mdiWifiArrowLeftRight, mdiWifi } from '@mdi/js';
 
 import {
   controllerList,
@@ -128,6 +128,8 @@ function pullControllerState(controller) {
 }
 
 function useController(controller) {
+  const activityTimeoutRef = useRef(null);
+
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case 'disconnected':
@@ -136,6 +138,10 @@ function useController(controller) {
         return { ...state, ...pullControllerState(controller) };
       case 'connected':
         return { ...state, ...pullControllerState(controller) };
+      case 'activity_begin':
+        return { ...state, activity: true, last_activity: Date.now() };
+      case 'activity_end':
+        return { ...state, activity: false };
       case 'error':
         return { ...state, error: true };
       case 'entitydiscovered':
@@ -144,6 +150,7 @@ function useController(controller) {
       // However, state filters might actually require a re-render when
       // entity state itself changes.
     }
+    throw new Error(`Invalid action ${action.type}`);
   }, { ...pullControllerState(controller) });
 
   useEffect(() => {
@@ -156,7 +163,22 @@ function useController(controller) {
     const onError = (event) => {
       dispatch({type: 'error'});
     };
+    const onActivity = () => {
+      const activityTimeout = 500;
+
+      if (activityTimeoutRef.current) {
+        clearTimeout(activityTimeoutRef.current);
+      }
+      activityTimeoutRef.current = setTimeout(() => {
+        activityTimeoutRef.current = null;
+        dispatch({type: 'activity_end' });
+      }, activityTimeout);
+
+      dispatch({type: 'activity_begin'});
+    };
+
     controller.addEventListener('entitydiscovered', onEntityDiscovered);
+    controller.addEventListener('activity', onActivity);
     controller.addEventListener('connected', onConnected);
     controller.addEventListener('error', onError);
     return () => {
@@ -200,10 +222,19 @@ function ControllerListItem({controller, onRemove}) {
     cardContent = <h3>⚠ Something went wrong</h3>;
   }
 
+  const activityIcon = state.activity ? mdiWifiArrowLeftRight : mdiWifi;
+  const lastActivity = state.last_activity ? `Last activity at ${(new Date(state.last_activity)).toLocaleString()}` : 'No activity yet';
+  const glyph = <Icon
+    path={activityIcon}
+    title={lastActivity}
+    size={0.8}
+  />;
+
   return <li><DrawerCard
     title={controller.host}
     onBeginOpening={() => actions.connect()}
     onDoneClosing={() => actions.disconnect()}
+    glyph={glyph}
     menu={
       <button tabIndex={0} onClick={onRemove} className={closeButton}>
         <Icon path={mdiCloseThick} size={0.8} />
