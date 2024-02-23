@@ -10,3 +10,8 @@
   background-color: transparent;
   border: none;
 }
+
+.messageIcon {
+  color: var(--section-background);
+  margin-top: 1rem;
+}

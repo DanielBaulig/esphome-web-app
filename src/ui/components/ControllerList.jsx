@@ -3,12 +3,30 @@ import DrawerCard from './DrawerCard';
 import StateEntity from './entities/StateEntity';
 import Icon from '@mdi/react';
 
-import { useRef, useEffect, useState, useReducer, lazy, Suspense } from 'react';
-import { mdiCloseThick, mdiWifiArrowLeftRight, mdiWifi } from '@mdi/js';
+import { 
+  useRef, 
+  useEffect, 
+  useState, 
+  useReducer, 
+  lazy, 
+  Suspense 
+} from 'react';
+
+import { 
+  mdiAlert, 
+  mdiToyBrickSearch, 
+  mdiCloseThick, 
+  mdiWifiArrowLeftRight, 
+  mdiWifi 
+} from '@mdi/js';
+
+import { flexFill, flex } from '../utility.module.css';
+import css from '../css';
 
 import {
   controllerList,
   closeButton,
+  messageIcon,
 } from './ControllerList.module.css';
 
 import { filters } from '../../config';
@@ -139,7 +157,7 @@ function useController(controller) {
       case 'connected':
         return { ...state, ...pullControllerState(controller) };
       case 'activity_begin':
-        return { ...state, activity: true, last_activity: Date.now() };
+        return { ...state, activity: true, lastActivity: Date.now() };
       case 'activity_end':
         return { ...state, activity: false };
       case 'error':
@@ -221,15 +239,28 @@ function ControllerListItem({controller, onRemove}) {
   const isConnected = state.connecting || state.connected;
 
   let cardContent = <Spinner />;
-  if (state.connected && state.entities.length > 0) {
-    cardContent = <ControllerEntities entities={state.entities} />;
+  if (state.connected && state.lastActivity) {
+    if (state.entities.length > 0) {
+      cardContent = <ControllerEntities entities={state.entities} />;
+    } else {
+      cardContent = <>
+        <Icon className={messageIcon} path={mdiToyBrickSearch} size={3.35} />
+        <h3 className={css(flexFill, flex)}>No entities found</h3>
+      </>;
+    }
   }
+
   if (state.error) {
-    cardContent = <h3>⚠ Something went wrong</h3>;
+    cardContent = <>
+      <Icon className={messageIcon} path={mdiAlert} size={3.35} />
+      <h3 className={css(flexFill, flex)}>Something went wrong</h3>
+    </>;
   }
 
   const activityIcon = state.activity ? mdiWifiArrowLeftRight : mdiWifi;
-  const lastActivity = state.last_activity ? `Last activity at ${(new Date(state.last_activity)).toLocaleString()}` : 'No activity yet';
+  const lastActivity = state.lastActivity ? 
+    `Last activity at ${(new Date(state.lastActivity)).toLocaleString()}` : 
+    'No activity yet';
   const glyph = <Icon
     path={activityIcon}
     title={lastActivity}
@@ -253,6 +284,10 @@ function ControllerListItem({controller, onRemove}) {
 
 export default function ControllerList({controllers, onRemoveController}) {
   return <ul className={controllerList}>
-    {controllers.map(controller => <ControllerListItem controller={controller} key={controller.host} onRemove={() => onRemoveController(controller)} />)}
+    {controllers.map(controller => <ControllerListItem 
+      controller={controller} 
+      key={controller.host} 
+      onRemove={() => onRemoveController(controller)} 
+    />)}
   </ul>;
 }
