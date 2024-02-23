@@ -1,0 +1,14 @@
+.footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  font-size: smaller;
+  flex-wrap: wrap;
+}
+
+.footer a {
+  display: flex;
+  justify-content: center;
+  flex-basis: 100%;
+  color: black;
+}

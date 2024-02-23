@@ -8,7 +8,8 @@ import Toast from './ui/Toast.jsx';
 
 import { useState } from 'react';
 
-import { insecureOrigin } from './config';
+import { title, insecureOrigin } from './config';
+import { footer } from './main.module.css';
 
 function privateAddressSpaceFetch(...args) {
   const isInsecureTarget = args[0].toString().startsWith('http:');
@@ -165,6 +166,7 @@ function App() {
         }}
       />
     </main>
+    <div className={footer}><a href="https://github.com/DanielBaulig/esphome-web-app/" target="_blank">{title} is Open Source</a><div>{__COMMIT_HASH__ ? `Commit ${__COMMIT_HASH__}` : ''}</div></div>
   </>;
 }
 

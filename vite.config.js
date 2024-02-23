@@ -5,6 +5,10 @@ import topLevelAwait from 'vite-plugin-top-level-await';
 
 import fs from 'fs';
 
+const commitHash = require('child_process')
+  .execSync('git rev-parse --short HEAD')
+  .toString();
+
 function esphomeWebConfigVirtualModules() {
   const cssModule = 'virtual:custom.css';
   const moduleIds = [cssModule];
@@ -76,6 +80,9 @@ function esphomeWebConfigVirtualModules() {
 }
 
 export default defineConfig({
+  define: {
+    __COMMIT_HASH__: JSON.stringify(commitHash),
+  },
   plugins: [
     esphomeWebConfigVirtualModules(),
     react(),
