@@ -6,7 +6,7 @@ import Header from './ui/Header.jsx';
 import ControllerRegistry from './ControllerRegistry.js';
 import Toast from './ui/Toast.jsx';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { title, insecureOrigin } from './config';
 import { footer } from './main.module.css';
@@ -28,12 +28,6 @@ function privateAddressSpaceFetch(...args) {
 
 const registry = new ControllerRegistry('controllers', {fetch: privateAddressSpaceFetch});
 
-
-registry.addEventListener('controllererror', (event) => {
-  checkStrictMixedContent(event.detail.target.host);
-  renderRoot();
-});
-
 import './main.css';
 import 'virtual:custom.css';
 
@@ -50,14 +44,6 @@ if ('serviceWorker' in navigator) {
     console.log(`Registration succesful ${registration}`);
   });
 } else console.warn('ServiceWorker not supported');
-
-function getRegisteredHosts() {
-  return registry.hosts;
-}
-
-function getRegisteredControllers() {
-  return registry.hosts.map(host => registry.controllers[host]);
-}
 
 async function waitForMessage(message, ms) {
   const p = new Promise((resolve, reject) => {
@@ -103,38 +89,54 @@ async function waitForPrivateNetworkAccessRequestConfirmation(ms = 1000) {
 // Let's montior for a PrivateNetworkAccess confirmation message
 waitForPrivateNetworkAccessRequestConfirmation(null);
 
-let hasStrictMixedContent;
-async function checkStrictMixedContent(host) {
-  if (!globalThis.isSecureContext) {
-    return;
-  }
-  if (hasStrictMixedContent === undefined) {
-    hasStrictMixedContent = !await waitForPrivateNetworkAccessRequestConfirmation(host);
-  }
-}
-
-async function registerHost(host) {
-  const controller = registry.registerHost(host);
-  controller.connect();
-  checkStrictMixedContent(host);
-  renderRoot();
-}
-
-function removeHost(host) {
-  registry.removeHost(host);
-  renderRoot();
-}
-
-function promptAndRegisterHost() {
-  const host = prompt('Host');
-  if (host === null) {
-    return;
-  }
-  registerHost(host);
-}
-
-function App() {
+function App({controllerRegistry}) {
   const [mostRecentPort, setMostRecentPort] = useState(null);
+  const [controllers, setControllers] = useState(getRegisteredControllers());
+  const [hasStrictMixedContent, setHasStrictMixedContent] = useState(undefined);
+
+  function getRegisteredControllers() {
+    return controllerRegistry.hosts.map(host => registry.controllers[host]);
+  }
+
+  async function checkStrictMixedContent(host) {
+    if (!globalThis.isSecureContext) {
+      return;
+    }
+    if (hasStrictMixedContent === undefined) {
+      setHasStrictMixedContent(!await waitForPrivateNetworkAccessRequestConfirmation(host));
+    }
+  }
+
+  async function registerHost(host) {
+    const controller = controllerRegistry.registerHost(host);
+    controller.connect();
+    checkStrictMixedContent(host);
+    setControllers(getRegisteredControllers());
+  }
+
+  function removeHost(host) {
+    controllerRegistry.removeHost(host);
+    setControllers(getRegisteredControllers());
+  }
+
+  function promptAndRegisterHost() {
+    const host = prompt('Host');
+    if (host === null) {
+      return;
+    }
+    registerHost(host);
+  }
+
+  useEffect(() => {
+    function onControllerError(event) {
+      checkStrictMixedContent(event.detail.target.host);
+    }
+    controllerRegistry.addEventListener('controllererror', onControllerError);
+    return () => {
+      controllerRegistry.removeEventListener('controllererror', onControllerError);
+    };
+  }, [controllerRegistry]);
+
 
   let href = insecureOrigin;
   if (!href) {
@@ -158,7 +160,7 @@ function App() {
         showPort={mostRecentPort}
       />
       <ControllerList
-        controllers={getRegisteredControllers()}
+        controllers={controllers}
         onRemoveController={controller => {
           if (confirm('Are you sure you want to remove this controller?')) {
             removeHost(controller.host) ;
@@ -172,7 +174,7 @@ function App() {
 
 function renderRoot() {
   reactRoot.render(
-    <App />
+    <App controllerRegistry={registry} />
   );
 }
 
