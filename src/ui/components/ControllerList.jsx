@@ -163,7 +163,8 @@ function useController(controller) {
     const onError = (event) => {
       dispatch({type: 'error'});
     };
-    const onActivity = () => {
+    const onActivity = (e) => {
+      console.log(e);
       const activityTimeout = 500;
 
       if (activityTimeoutRef.current) {
@@ -178,12 +179,17 @@ function useController(controller) {
     };
 
     controller.addEventListener('entitydiscovered', onEntityDiscovered);
-    controller.addEventListener('activity', onActivity);
+    controller.addEventListener('log', onActivity);
+    controller.addEventListener('state', onActivity);
+    controller.addEventListener('ping', onActivity);
     controller.addEventListener('connected', onConnected);
     controller.addEventListener('error', onError);
     return () => {
       controller.removeEventListener('connected', onConnected);
       controller.removeEventListener('entitydiscovered', onEntityDiscovered);
+      controller.removeEventListener('log', onActivity);
+      controller.removeEventListener('state', onActivity);
+      controller.removeEventListener('ping', onActivity);
       controller.removeEventListener('error', onError);
     };
   }, [controller]);
