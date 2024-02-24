@@ -161,6 +161,7 @@ function App({controllerRegistry}) {
 
   async function registerHost(host) {
     const controller = controllerRegistry.registerHost(host);
+    controller.connect();
     setControllers(getRegisteredControllers());
   }
 
