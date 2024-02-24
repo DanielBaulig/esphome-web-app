@@ -196,12 +196,17 @@ function useController(controller) {
       dispatch({type: 'activity_begin'});
     };
 
+    function onConnecting(event) {
+      dispatch({type: 'connecting'});
+    }
+
     controller.addEventListener('entitydiscovered', onEntityDiscovered);
     controller.addEventListener('log', onActivity);
     controller.addEventListener('state', onActivity);
     controller.addEventListener('ping', onActivity);
     controller.addEventListener('connected', onConnected);
     controller.addEventListener('error', onError);
+    controller.addEventListener('connecting', onConnecting);
     return () => {
       controller.removeEventListener('connected', onConnected);
       controller.removeEventListener('entitydiscovered', onEntityDiscovered);
@@ -209,13 +214,13 @@ function useController(controller) {
       controller.removeEventListener('state', onActivity);
       controller.removeEventListener('ping', onActivity);
       controller.removeEventListener('error', onError);
+      controller.removeEventListener('connecting', onConnecting);
     };
   }, [controller]);
 
   const actions = {
     connect() {
       controller.connect();
-      dispatch({ type: 'connecting' });
     },
     disconnect() {
       controller.disconnect();
@@ -235,8 +240,8 @@ function useController(controller) {
 
 function ControllerListItem({controller, onRemove}) {
   const [state, actions] = useController(controller);
-  const [isDrawerClosing, setDrawerClosing] = useState(false);
   const isConnected = state.connecting || state.connected;
+  const [isDrawerOpen, setDrawerOpen] = useState(isConnected);
 
   let cardContent = <Spinner />;
   if (state.connected && state.lastActivity) {
@@ -257,6 +262,12 @@ function ControllerListItem({controller, onRemove}) {
     </>;
   }
 
+  useEffect(() => {
+    if (isConnected) {
+      setDrawerOpen(true);
+    }
+  }, [isConnected]);
+
   const activityIcon = state.activity ? mdiWifiArrowLeftRight : mdiWifi;
   const lastActivity = state.lastActivity ? 
     `Last activity at ${(new Date(state.lastActivity)).toLocaleString()}` : 
@@ -268,7 +279,9 @@ function ControllerListItem({controller, onRemove}) {
   />;
 
   return <li><DrawerCard
+    open={isDrawerOpen}
     title={controller.host}
+    onToggleDrawer={() => setDrawerOpen(!isDrawerOpen)}
     onBeginOpening={() => actions.connect()}
     onDoneClosing={() => actions.disconnect()}
     glyph={glyph}

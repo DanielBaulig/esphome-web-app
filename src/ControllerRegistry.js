@@ -20,6 +20,14 @@ export default class ControllerRegistry extends EventTarget {
     this.#constructControllers();
   }
 
+  has(host) {
+    return this.hosts.includes(host);
+  }
+
+  get(host) {
+    return this.controllers[host];
+  }
+
   #onControllerError = (event) => {
     this.dispatchEvent(new CustomEvent('controllererror', {detail: event}));
   }
@@ -57,7 +65,7 @@ export default class ControllerRegistry extends EventTarget {
   }
 
   registerHost(host) {
-    if (this.hosts.includes(host)) {
+    if (this.has(host)) {
       return this.controllers[host];
     }
     this.hosts.push(host);
@@ -67,7 +75,7 @@ export default class ControllerRegistry extends EventTarget {
   }
 
   removeHost(host) {
-    if (!this.hosts.includes(host)) {
+    if (!this.has(host)) {
       return;
     }
     this.hosts = this.hosts.filter(v => v != host);

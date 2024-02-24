@@ -45,6 +45,13 @@ if ('serviceWorker' in navigator) {
   });
 } else console.warn('ServiceWorker not supported');
 
+function ltrim(str, ch) {
+  // Make sure ch is a single character
+  ch = ch.charAt(0);
+  const rx = new RegExp(`^[${ch}]*(.*)$`);
+  return str.match(rx)[1];
+}
+
 async function waitForMessage(message, ms) {
   const p = new Promise((resolve, reject) => {
     let timeout;
@@ -82,7 +89,7 @@ async function waitForPrivateNetworkAccessRequestConfirmation(ms = 1000) {
     await waitForMessage('pna_confirm', ms);
     return receivedPrivateNetworkAccessConfirmation = true;
   } catch(e) {
-    return false;
+    return receivedPrivateNetworkAccessConfirmation;
   }
 }
 
@@ -98,19 +105,62 @@ function App({controllerRegistry}) {
     return controllerRegistry.hosts.map(host => registry.controllers[host]);
   }
 
-  async function checkStrictMixedContent(host) {
+  async function checkStrictMixedContent() {
     if (!globalThis.isSecureContext) {
       return;
     }
     if (hasStrictMixedContent === undefined) {
-      setHasStrictMixedContent(!await waitForPrivateNetworkAccessRequestConfirmation(host));
+      setHasStrictMixedContent(!await waitForPrivateNetworkAccessRequestConfirmation(1000));
     }
+  }
+
+  function interceptHashNavigation(event) {
+    if (!event.hashChange) {
+      return;
+    }
+
+    event.intercept({ handler() {
+      executeHashQueryActions(event.destination.url);
+    } });
+  }
+
+  function clearHash() {
+    const url = new URL(location.href);
+    url.hash = '';
+    history.replaceState(null, '', url);
+  }
+
+  function executeAddHostHashAction(host) {
+    if (!host) {
+      return null;
+    }
+
+    if (controllerRegistry.has(host)) {
+      return controllerRegistry.get(host).connect();
+    }
+
+    if(!confirm(`Would you like to add the host ${host}?`)) {
+      return;
+    }
+
+    registerHost(host);
+  }
+
+  function executeHashQueryActions(str = location.href) {
+    const url = new URL(str);
+    const query = new URLSearchParams(ltrim(url.hash, '#'));
+
+    for (const [k, v] of query) {
+      if (k === 'addhost') {
+        executeAddHostHashAction(v);
+      }
+    }
+
+    clearHash();
   }
 
   async function registerHost(host) {
     const controller = controllerRegistry.registerHost(host);
-    controller.connect();
-    checkStrictMixedContent(host);
     setControllers(getRegisteredControllers());
   }
 
@@ -129,13 +179,24 @@ function App({controllerRegistry}) {
 
   useEffect(() => {
     function onControllerError(event) {
-      checkStrictMixedContent(event.detail.target.host);
+      checkStrictMixedContent();
     }
     controllerRegistry.addEventListener('controllererror', onControllerError);
+    
     return () => {
       controllerRegistry.removeEventListener('controllererror', onControllerError);
     };
   }, [controllerRegistry]);
+
+  useEffect(() => {
+    executeHashQueryActions();
+
+    navigation.addEventListener('navigate', interceptHashNavigation);
+
+    return () => {
+      navigation.removeEventListener('navigate', interceptHashNavigation);
+    };
+  }, []);
 
 
   let href = insecureOrigin;
@@ -162,7 +223,7 @@ function App({controllerRegistry}) {
       <ControllerList
         controllers={controllers}
         onRemoveController={controller => {
-          if (confirm('Are you sure you want to remove this controller?')) {
+          if (confirm(`Are you sure you want to remove the host ${controller.host}?`)) {
             removeHost(controller.host) ;
           }
         }}
