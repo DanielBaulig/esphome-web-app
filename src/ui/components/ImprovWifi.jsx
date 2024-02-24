@@ -53,6 +53,9 @@ export default function ImprovWifi({
       }}
     />
   }
+
+  const addViaWifi = nextUrl.startsWith(location.href);
+
   return <>
     <Icon
       className={css(flex, flexFill)}
@@ -74,9 +77,9 @@ export default function ImprovWifi({
       <a
         className={css(link, flex)}
         href={nextUrl}
-        target="_blank"
+        target={iif(!addViaWifi, "_blank")}
       >
-        <button>Visit device</button>
+        <button>{iif(addViaWifi, 'Add via Wi-Fi', 'Visit device')}</button>
       </a>
     )}
   </>;
