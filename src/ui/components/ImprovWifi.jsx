@@ -6,12 +6,15 @@ import WifiSelectionComponent from './WifiSelectionComponent';
 
 import iif from '../../iif';
 import css from '../css';
+import isPrivateAddressSpace from '../../isPrivateAddressSpace';
 
 import { mdiWifiCheck, mdiWifiCog, mdiWifiCancel } from '@mdi/js';
 import { useState } from 'react';
 
 import { flex, flexFill } from '../utility.module.css';
 import { link } from './ImprovWifi.module.css';
+
+const ipAddressRegExp = /^https?:\/\/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})(:[0-9]+)?$/;
 
 export default function ImprovWifi({
   initializing,
@@ -54,7 +57,13 @@ export default function ImprovWifi({
     />
   }
 
-  const addViaWifi = nextUrl.startsWith(location.href);
+  const match = ipAddressRegExp.exec(nextUrl);
+  const addViaWifi = (
+      nextUrl.startsWith(location.href) ||
+      (match && isPrivateAddressSpace(match[1]))
+  );
+
+  const visitUrl = match ? `${location.href}#?addhost=${match[1]}` : nextUrl;
 
   return <>
     <Icon
@@ -76,7 +85,7 @@ export default function ImprovWifi({
     {iif(nextUrl,
       <a
         className={css(link, flex)}
-        href={nextUrl}
+        href={visitUrl}
         target={iif(!addViaWifi, "_blank")}
       >
         <button>{iif(addViaWifi, 'Add via Wi-Fi', 'Visit device')}</button>
