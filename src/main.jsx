@@ -192,6 +192,12 @@ function App({controllerRegistry}) {
   useEffect(() => {
     executeHashQueryActions();
 
+    const navigation = globalThis.navigation;
+
+    if(!navigation) {
+      return;
+    }
+
     navigation.addEventListener('navigate', interceptHashNavigation);
 
     return () => {
