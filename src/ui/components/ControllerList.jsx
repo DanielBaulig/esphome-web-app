@@ -23,7 +23,6 @@ import {
 
 import { flexFill, flex } from '../utility.module.css';
 import css from '../css';
-import iif from '../../iif';
 import createAddHostURL from '../../createAddHostURL';
 
 import {
@@ -289,10 +288,15 @@ function ControllerListItem({controller, onRemove, onDrop}) {
   const hostMimeType = 'application/x.espwa.host';
   const dropIndicator = isDragAccept ? <div className={dropIndicatorClass} /> : null;
 
+  const classNames = css({
+    [itemClass]: true,
+    [draggingClass]: !!dragging,
+  });
+
   return (
     <li
       ref={liRef}
-      className={css(itemClass, iif(!!dragging, draggingClass))}
+      className={classNames}
       onDragOver={(event) => {
         if (isDragAccept) {
           event.preventDefault();

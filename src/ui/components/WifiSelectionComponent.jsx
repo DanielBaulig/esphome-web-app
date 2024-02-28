@@ -1,13 +1,23 @@
 import Icon from '@mdi/react';
 import { mdiWifiStrengthAlertOutline, mdiLock, mdiWifiStrength4, mdiWifiStrength3, mdiWifiStrength2, mdiWifiStrength1, mdiWifiStrengthOutline } from '@mdi/js';
 import { useId, useState, useRef, useEffect } from 'react';
+
 import iif from '../../iif';
+import css from '../css';
 
 import Drawer from '../Drawer';
 import Spinner from '../Spinner';
 import {flex} from '../utility.module.css';
 
-import {row, list, radio, insecure, password as passwordClass, drawer, main } from './WifiSelectionComponent.module.css';
+import {
+  row,
+  list,
+  radio,
+  insecure,
+  password as passwordClass,
+  drawer,
+  main,
+} from './WifiSelectionComponent.module.css';
 
 function getRssiIcon(rssi) {
   if (rssi >= -55) {
@@ -43,7 +53,7 @@ function WifiSelectionRow({name, rssi, secured, radioGroup, onSelected}) {
         onSelected({name, rssi, secured});
       }}
     />
-    <label className={`${row} ${iif(!secured, insecure)}`} htmlFor={id}>
+    <label className={css(row, { [insecure]: !secured })} htmlFor={id}>
       <span className={name}>{name}</span>
       {iif(secured, <Icon path={mdiLock} size={iconSize} />)}
       <Icon path={getRssiIcon(rssi)} size={iconSize} />
