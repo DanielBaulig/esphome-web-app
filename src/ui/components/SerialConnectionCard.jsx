@@ -98,7 +98,7 @@ export default function SerialConnectionCard({port, onRemove, open}) {
           await port.open({baudRate: useImprovSerial.baudRate})
           await port.close();
         } catch(error) {
-          console.error(erro);
+          console.error(error);
           setError(error);
         }
       }
