@@ -47,6 +47,7 @@ const BinarySensorEntity = lazy(() => import('./entities/BinarySensorEntity'));
 const ButtonEntity = lazy(() => import('./entities/ButtonEntity'));
 const SelectEntity = lazy(() => import('./entities/SelectEntity'));
 const SensorEntity = lazy(() => import('./entities/SensorEntity'));
+const TextSensorEntity = lazy(() => import('./entities/TextSensorEntity'));
 const SwitchEntity = lazy(() => import('./entities/SwitchEntity'));
 const FanEntity = lazy(() => import('./entities/FanEntity'));
 const CoverEntity = lazy(() => import('./entities/CoverEntity'));
@@ -74,6 +75,10 @@ function getComponentForEntity(entity) {
     case 'sensor':
       return <Suspense fallback={loading} key={entity.id}>
         <SensorEntity entity={entity} />
+      </Suspense>;
+    case 'text_sensor':
+      return <Suspense fallback={loading} key={entity.id}>
+        <TextSensorEntity entity={entity} />
       </Suspense>;
     case 'switch':
       return <Suspense fallback={loading} key={entity.id}>
