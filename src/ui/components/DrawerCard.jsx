@@ -1,17 +1,24 @@
 import Drawer from '../Drawer';
 
-import { useReducer, useState, useEffect, useCallback } from 'react';
+import { useReducer, useState, useEffect, useCallback, useRef } from 'react';
 
 import { drawer, card, header, title as titleClass } from './DrawerCard.module.css';
 
-function DrawerCardHeader({title, glyph, onToggleDrawer, children}) {
+function DrawerCardHeader({title, glyph, onToggleDrawer, onMouseDown, children}) {
   return <header className={header}>{glyph}
-    <button className={titleClass} tabIndex={0} onClick={onToggleDrawer}><h3>{title}</h3></button>
+    <button 
+      className={titleClass} 
+      tabIndex={0} 
+      onClick={onToggleDrawer}
+      onMouseDown={onMouseDown}
+    >
+      <h3>{title}</h3>
+    </button>
     {children}
   </header>;
 }
 
-export default function DrawerCard({open, glyph, onToggleDrawer, onBeginOpening, onDoneClosing, title, menu, children}) {
+export default function DrawerCard({open, glyph, onToggleDrawer, onBeginOpening, onDoneClosing, title, menu, children, onDragStart, onDragEnd}) {
   const [{closing, closed}, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case 'finishClosing':
@@ -36,6 +43,9 @@ export default function DrawerCard({open, glyph, onToggleDrawer, onBeginOpening,
     onToggleDrawer = onUncontrolledToggleDrawer;
     open = uncontrolledOpen;
   }
+  const [isDraggable, setDraggable] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const draggableRef = useRef(null);
 
   useEffect(() => {
     if (open) {
@@ -46,11 +56,23 @@ export default function DrawerCard({open, glyph, onToggleDrawer, onBeginOpening,
     }
   }, [open]);
 
-  return <div className={card}>
+  return <div 
+    className={card} 
+    draggable={isDraggable}
+    onDragStart={(event) => {
+      setDragging(true)
+      onDragStart(event)
+    }}
+    onDragEnd={(event) => {
+      setDragging(false);
+      onDragEnd(event)
+    }}
+  >
     <DrawerCardHeader
       glyph={glyph}
       title={title}
       onToggleDrawer={onToggleDrawer}
+      onMouseDown={() => setDraggable(true)}
     >
       {menu}
     </DrawerCardHeader>

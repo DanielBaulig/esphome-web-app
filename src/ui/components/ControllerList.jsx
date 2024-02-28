@@ -3,30 +3,36 @@ import DrawerCard from './DrawerCard';
 import StateEntity from './entities/StateEntity';
 import Icon from '@mdi/react';
 
-import { 
-  useRef, 
-  useEffect, 
-  useState, 
-  useReducer, 
-  lazy, 
-  Suspense 
+import {
+  useRef,
+  useEffect,
+  useState,
+  useReducer,
+  lazy,
+  Suspense,
+  forwardRef,
 } from 'react';
 
-import { 
-  mdiAlert, 
-  mdiToyBrickSearch, 
-  mdiCloseThick, 
-  mdiWifiArrowLeftRight, 
-  mdiWifi 
+import {
+  mdiAlert,
+  mdiToyBrickSearch,
+  mdiCloseThick,
+  mdiWifiArrowLeftRight,
+  mdiWifi
 } from '@mdi/js';
 
 import { flexFill, flex } from '../utility.module.css';
 import css from '../css';
+import iif from '../../iif';
+import createAddHostURL from '../../createAddHostURL';
 
 import {
   controllerList,
   closeButton,
   messageIcon,
+  dropIndicator as dropIndicatorClass,
+  item as itemClass,
+  dragging as draggingClass,
 } from './ControllerList.module.css';
 
 import { filters } from '../../config';
@@ -182,7 +188,6 @@ function useController(controller) {
       dispatch({type: 'error'});
     };
     const onActivity = (e) => {
-      console.log(e);
       const activityTimeout = 500;
 
       if (activityTimeoutRef.current) {
@@ -238,10 +243,13 @@ function useController(controller) {
   return [state, actions];
 }
 
-function ControllerListItem({controller, onRemove}) {
+function ControllerListItem({controller, onRemove, onDrop}) {
   const [state, actions] = useController(controller);
   const isConnected = state.connecting || state.connected;
   const [isDrawerOpen, setDrawerOpen] = useState(isConnected);
+  const [isDragAccept, setDragAccept] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const liRef = useRef(null);
 
   let cardContent = <Spinner />;
   if (state.connected && state.lastActivity) {
@@ -269,8 +277,8 @@ function ControllerListItem({controller, onRemove}) {
   }, [isConnected]);
 
   const activityIcon = state.activity ? mdiWifiArrowLeftRight : mdiWifi;
-  const lastActivity = state.lastActivity ? 
-    `Last activity at ${(new Date(state.lastActivity)).toLocaleString()}` : 
+  const lastActivity = state.lastActivity ?
+    `Last activity at ${(new Date(state.lastActivity)).toLocaleString()}` :
     'No activity yet';
   const glyph = <Icon
     path={activityIcon}
@@ -278,29 +286,94 @@ function ControllerListItem({controller, onRemove}) {
     size={0.8}
   />;
 
-  return <li><DrawerCard
-    open={isDrawerOpen}
-    title={controller.host}
-    onToggleDrawer={() => setDrawerOpen(!isDrawerOpen)}
-    onBeginOpening={() => actions.connect()}
-    onDoneClosing={() => actions.disconnect()}
-    glyph={glyph}
-    menu={
-      <button tabIndex={0} onClick={onRemove} className={closeButton}>
-        <Icon path={mdiCloseThick} size={0.8} />
-      </button>
-    }
-  >
-    {cardContent}
-  </DrawerCard></li>;
+  const hostMimeType = 'application/x.espwa.host';
+  const dropIndicator = isDragAccept ? <div className={dropIndicatorClass} /> : null;
+
+  return (
+    <li
+      ref={liRef}
+      className={css(itemClass, iif(!!dragging, draggingClass))}
+      onDragOver={(event) => {
+        if (isDragAccept) {
+          event.preventDefault();
+        }
+      }}
+      onDragEnter={(e) => {
+        e.stopPropagation();
+        const dt = e.dataTransfer;
+        if (!dt.types.includes(hostMimeType)) {
+          // Only accept x.espwa.host drops
+          return;
+        }
+        if (dragging) {
+          // Don't accept itself
+          return;
+        }
+        e.preventDefault();
+        setDragAccept(true)
+      }}
+      onDragLeave={(e) => {
+        e.stopPropagation();
+        if (liRef && (e.relatedTarget === liRef.current || liRef.current.contains(e.relatedTarget))) {
+          return;
+        }
+        e.preventDefault();
+        setDragAccept(false);
+      }}
+      onDrop={(event) => {
+        event.stopPropagation();
+        setDragAccept(false);
+        const dt = event.dataTransfer;
+        if (!dt.types.includes(hostMimeType)) {
+          return;
+        }
+        const data = dt.getData(hostMimeType);
+        onDrop(JSON.parse(data).host);
+      }}
+    >
+      {dropIndicator}
+      <DrawerCard
+        open={isDrawerOpen}
+        title={controller.host}
+        onToggleDrawer={() => setDrawerOpen(!isDrawerOpen)}
+        onBeginOpening={() => actions.connect()}
+        onDoneClosing={() => actions.disconnect()}
+        onDragEnd={() => {
+          setDragging(false);
+        }}
+        onDragStart={(e) => {
+          setDragging(true);
+          const dt = e.dataTransfer;
+          const host = controller.host;
+          const uri = createAddHostURL(host);
+          dt.setData(hostMimeType, JSON.stringify({ host }));
+          dt.setData('text/uri-list', uri);
+          dt.setData('text/plain', uri);
+          e.dataTransfer.dropEffect = 'move';
+        }}
+        glyph={glyph}
+        menu={
+          <button tabIndex={0} onClick={onRemove} className={closeButton}>
+            <Icon path={mdiCloseThick} size={0.8} />
+          </button>
+        }
+      >
+        {cardContent}
+      </DrawerCard>
+    </li>
+  );
 }
 
-export default function ControllerList({controllers, onRemoveController}) {
-  return <ul className={controllerList}>
-    {controllers.map(controller => <ControllerListItem 
-      controller={controller} 
-      key={controller.host} 
-      onRemove={() => onRemoveController(controller)} 
-    />)}
+export default forwardRef(function ControllerList({controllers, onRemoveController, onInsertHost }, ref) {
+  let previousController = null;
+  return <ul className={controllerList} ref={ref}>
+    {controllers.map(controller => {
+      return <ControllerListItem
+        controller={controller}
+        key={controller.host}
+        onRemove={() => onRemoveController(controller)}
+        onDrop={(host) => onInsertHost(host, controller)}
+      />;
+    })}
   </ul>;
-}
+});

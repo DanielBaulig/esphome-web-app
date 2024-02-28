@@ -7,6 +7,7 @@ import WifiSelectionComponent from './WifiSelectionComponent';
 import iif from '../../iif';
 import css from '../css';
 import isPrivateAddressSpace from '../../isPrivateAddressSpace';
+import createAddHostURL from '../../createAddHostURL';
 
 import { mdiWifiCheck, mdiWifiCog, mdiWifiCancel } from '@mdi/js';
 import { useState } from 'react';
@@ -63,7 +64,7 @@ export default function ImprovWifi({
       (match && isPrivateAddressSpace(match[1]))
   );
 
-  const visitUrl = match ? `${location.href}#?addhost=${match[1]}` : nextUrl;
+  const visitUrl = match ? createAddHostURL(match[1]) : nextUrl;
 
   return <>
     <Icon

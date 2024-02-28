@@ -64,13 +64,42 @@ export default class ControllerRegistry extends EventTarget {
     localStorage.setItem(this.storageKey, JSON.stringify(this.hosts));
   }
 
-  registerHost(host) {
+  addHost(host) {
     if (this.has(host)) {
       return this.controllers[host];
     }
     this.hosts.push(host);
     this.controllers[host] = this.#createController(host);
     this.#flush();
+    return this.controllers[host];
+  }
+
+  insertHost(host, controller) {
+    const hostIndex = this.hosts.indexOf(host);
+    // Check if we alredy have this host
+    if (hostIndex > -1) {
+      // Remove host from current position if so
+      this.hosts.splice(hostIndex, 1);
+    }
+
+    // Check if a controller was given to insert before and we can find it's position
+    const insertIndex = controller ? this.hosts.indexOf(controller.host) : -1;
+    if (insertIndex > -1) {
+      // Insert host before given controller if so
+      this.hosts.splice(insertIndex, 0, host);
+    } else {
+      // Otherwise append at end
+      this.hosts.push(host);
+    }
+
+    // Check if we already have a controller for this host
+    if (!this.controllers[host]) {
+      // Create one if not
+      this.controller[host] = this.#createController(host);
+    }
+
+    this.#flush();
+
     return this.controllers[host];
   }
 

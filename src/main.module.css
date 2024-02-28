@@ -1,7 +1,6 @@
 .footer {
   display: flex;
   justify-content: center;
-  margin-top: 2rem;
   font-size: smaller;
   flex-wrap: wrap;
 }
@@ -11,4 +10,19 @@
   justify-content: center;
   flex-basis: 100%;
   color: black;
+}
+
+.dropTarget {
+  /* prevent margin collapse */
+  overflow: auto;
+}
+
+.dropIndicator {
+  height: 2px;
+  background-color: black;
+  margin: 0.5rem 8rem;
+}
+
+.dropSpacer {
+  height: 2rem;
 }

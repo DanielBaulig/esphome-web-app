@@ -6,10 +6,10 @@ import Header from './ui/Header.jsx';
 import ControllerRegistry from './ControllerRegistry.js';
 import Toast from './ui/Toast.jsx';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { title, insecureOrigin } from './config';
-import { footer } from './main.module.css';
+import { footer, dropTarget, dropIndicator, dropSpacer } from './main.module.css';
 
 function privateAddressSpaceFetch(...args) {
   const isInsecureTarget = args[0].toString().startsWith('http:');
@@ -100,6 +100,9 @@ function App({controllerRegistry}) {
   const [mostRecentPort, setMostRecentPort] = useState(null);
   const [controllers, setControllers] = useState(getRegisteredControllers());
   const [hasStrictMixedContent, setHasStrictMixedContent] = useState(undefined);
+  const addHostDropTarget = useRef(null);
+  const controllerList = useRef(null);
+  const [isAcceptingDrop, setAcceptDrop] = useState(false);
 
   function getRegisteredControllers() {
     return controllerRegistry.hosts.map(host => registry.controllers[host]);
@@ -143,7 +146,7 @@ function App({controllerRegistry}) {
       return;
     }
 
-    registerHost(host);
+    addHost(host);
   }
 
   function executeHashQueryActions(str = location.href) {
@@ -159,8 +162,17 @@ function App({controllerRegistry}) {
     clearHash();
   }
 
-  async function registerHost(host) {
-    const controller = controllerRegistry.registerHost(host);
+  function insertHost(host, controller) {
+    const connect = !controllerRegistry.has(host);
+    controllerRegistry.insertHost(host, controller);
+    if (connect) {
+      controller.connect();
+    }
+    setControllers(getRegisteredControllers());
+  }
+
+  async function addHost(host) {
+    const controller = controllerRegistry.addHost(host);
     controller.connect();
     setControllers(getRegisteredControllers());
   }
@@ -170,12 +182,12 @@ function App({controllerRegistry}) {
     setControllers(getRegisteredControllers());
   }
 
-  function promptAndRegisterHost() {
+  function promptAndAddHost() {
     const host = prompt('Host');
     if (host === null) {
       return;
     }
-    registerHost(host);
+    addHost(host);
   }
 
   useEffect(() => {
@@ -183,7 +195,7 @@ function App({controllerRegistry}) {
       checkStrictMixedContent();
     }
     controllerRegistry.addEventListener('controllererror', onControllerError);
-    
+
     return () => {
       controllerRegistry.removeEventListener('controllererror', onControllerError);
     };
@@ -217,27 +229,72 @@ function App({controllerRegistry}) {
     This user agent appears to  not allow access to private network hosts from secure origins. Please try loading the <a href={href}>insecure origin</a> instead.
   </Toast>;
 
-  return <>
-    <Header
-      onAddController={() => promptAndRegisterHost()}
-      onConnectSerialPort={(port) => setMostRecentPort(port)}
-    />
-    {strictMixedContentWarning}
-    <main>
-      <SerialConnectionList
-        showPort={mostRecentPort}
+  return (
+    <>
+      <Header
+        onAddController={() => promptAndAddHost()}
+        onConnectSerialPort={(port) => setMostRecentPort(port)}
       />
-      <ControllerList
-        controllers={controllers}
-        onRemoveController={controller => {
-          if (confirm(`Are you sure you want to remove the host ${controller.host}?`)) {
-            removeHost(controller.host) ;
-          }
-        }}
-      />
-    </main>
-    <div className={footer}><a href="https://github.com/DanielBaulig/esphome-web-app/" target="_blank">{title} is Open Source</a><div>{__COMMIT_HASH__ ? `Commit ${__COMMIT_HASH__}` : ''}</div></div>
-  </>;
+      {strictMixedContentWarning}
+      <main>
+        <SerialConnectionList
+          showPort={mostRecentPort}
+        />
+        <div
+          className={dropTarget}
+          ref={addHostDropTarget}
+          onDragOver={(event) => {
+            if (isAcceptingDrop) {
+              event.preventDefault();
+            }
+          }}
+          onDragEnter={(event) => {
+            setAcceptDrop(true);
+          }}
+          onDragLeave={(event) => {
+            const el = addHostDropTarget.current;
+            const cl = controllerList.current;
+            if (el.contains(event.relatedTarget) && !cl.contains(event.relatedTarget)) {
+              return;
+            }
+            setAcceptDrop(false);
+          }}
+          onDrop={(event) => {
+            const hostMimeType = 'application/x.espwa.host';
+            setAcceptDrop(false);
+            const dt = event.dataTransfer;
+            if (!dt.types.includes(hostMimeType)) {
+              return;
+            }
+            const data = dt.getData(hostMimeType);
+            insertHost(JSON.parse(data).host, null);
+          }}
+        >
+          <ControllerList
+            ref={controllerList}
+            controllers={controllers}
+            onInsertHost={insertHost}
+            onRemoveController={controller => {
+              if (confirm(`Are you sure you want to remove the host ${controller.host}?`)) {
+                removeHost(controller.host) ;
+              }
+            }}
+          />
+          { isAcceptingDrop && <div className={dropIndicator}></div> }
+          <div className={dropSpacer}></div>
+        </div>
+      </main>
+      <div className={footer}>
+        <a
+          href="https://github.com/DanielBaulig/esphome-web-app/"
+           target="_blank"
+        >
+          {title} is Open Source
+        </a>
+        <div>{__COMMIT_HASH__ ? `Commit ${__COMMIT_HASH__}` : ''}</div>
+      </div>
+    </>
+  );
 }
 
 function renderRoot() {
