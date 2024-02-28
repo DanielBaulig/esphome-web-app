@@ -10,10 +10,10 @@ export default function NumberEntity({entity}) {
   const state = useEntityState(entity);
 
   return <EntityCard title={getEntityLabel(state)} className={number}>
-    <ResponsiveInput 
-      type="number" 
+    <ResponsiveInput
+      type="number"
       value={state.state}
-      onChange={v => console.log('change', v)}
+      onChange={v => entity.set(v)}
     />
   </EntityCard>;
 }
