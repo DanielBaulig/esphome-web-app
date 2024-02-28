@@ -53,6 +53,7 @@ const FanEntity = lazy(() => import('./entities/FanEntity'));
 const CoverEntity = lazy(() => import('./entities/CoverEntity'));
 const NumberEntity = lazy(() => import('./entities/NumberEntity'));
 const TextEntity = lazy(() => import('./entities/TextEntity'));
+const LockEntity = lazy(() => import('./entities/LockEntity'));
 
 function getComponentForEntity(entity) {
   const loading = <Spinner />;
@@ -100,6 +101,10 @@ function getComponentForEntity(entity) {
     case 'text':
       return <Suspense fallback={loading} key={entity.id}>
         <TextEntity entity={entity} />
+      </Suspense>;
+    case 'lock':
+      return <Suspense fallback={loading} key={entity.id}>
+        <LockEntity entity={entity} />
       </Suspense>;
     default:
       return <StateEntity entity={entity} key={entity.id} />

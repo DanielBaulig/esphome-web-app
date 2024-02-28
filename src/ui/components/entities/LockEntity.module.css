@@ -1,0 +1,6 @@
+.state {
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  flex-basis: 100%;
+}
