@@ -1,0 +1,14 @@
+.input {
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 2em;
+  width: 7ch;
+  font-family: system-ui;
+}
+
+.input:invalid{
+  background-color: var(--card-background-warning);
+}

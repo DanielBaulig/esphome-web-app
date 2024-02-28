@@ -32,7 +32,7 @@ export default function ResponsiveInput({onChange, value, ...props}) {
     }
   }, [inputRef.current]);
 
-  return <input 
+  return <input
     {...props}
     ref={inputRef}
     value={interactingRef.current ? interactionValue : value}
