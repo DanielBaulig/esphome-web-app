@@ -269,6 +269,7 @@ function ControllerListItem({controller, onRemove, onDrop}) {
   const [isDragAccept, setDragAccept] = useState(false);
   const [dragging, setDragging] = useState(false);
   const liRef = useRef(null);
+  const dragEnterRef = useRef(null);
 
   let cardContent = <Spinner />;
   if (state.connected && state.lastActivity) {
@@ -323,6 +324,7 @@ function ControllerListItem({controller, onRemove, onDrop}) {
         }
       }}
       onDragEnter={(e) => {
+        dragEnterRef.current = e.target;
         e.stopPropagation();
         const dt = e.dataTransfer;
         if (!dt.types.includes(hostMimeType)) {
@@ -338,9 +340,32 @@ function ControllerListItem({controller, onRemove, onDrop}) {
       }}
       onDragLeave={(e) => {
         e.stopPropagation();
-        if (liRef && (e.relatedTarget === liRef.current || liRef.current.contains(e.relatedTarget))) {
-          return;
-        }
+        // lastDragEnter is a hack to account for this Safari bug:
+        // https://bugs.webkit.org/show_bug.cgi?id=66547
+        // Basically Safari doesn't provide a relatedTarget element on
+        // dragleave events.
+        // Here's how we work around it:
+        // The order of events for dragenter and dragleave is as follows:
+        // User moves cursor over parent element
+        // - Parent emits dragenter
+        // User moves cursor over child element
+        // - Child emits dragenter
+        // - Parent dragleave
+        // User moves cursor off of child element
+        // - Parent emits dragenter
+        // - Child emits dragleave
+        // This means that the dragenter event for the new element fires
+        // before the dragleave event for the old element fires. By caching
+        // the most recent dragenter element, we can use the cached
+        // dragenter target as a standin for dragleave.relatedTarget
+        const lastDragEnter = dragEnterRef.current;
+        dragEnterRef.current = null;
+        if (
+          e.relatedTarget === liRef.current ||
+          liRef.current.contains(e.relatedTarget || lastDragEnter)
+        ) {
+            return;
+          }
         e.preventDefault();
         setDragAccept(false);
       }}

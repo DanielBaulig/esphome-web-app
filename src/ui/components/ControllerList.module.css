@@ -23,13 +23,15 @@
 }
 
 .dragging {
-  transition: 0.0001s;
+  /* using a short transition will allow the browser to grab a
+   * "screenshot" for the visual before hiding the element */
+  transition: 0.01s;
   /* remove it from document flow */
   position: absolute;
   /* have to set an absolute width because of position: absolute */
   width: 400px;
-  /* get it out of the way */
-  transform:translateX(-9999px);
+  /* hide it */
+  visibility: hidden;
 }
 
 .item {
