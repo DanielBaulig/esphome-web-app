@@ -41,9 +41,9 @@ web_server:
 
 Then, access ESPHome Web App (an instance is hosted by me at https://esplink.rarelyunplugged.com) and add your ESPHome-based device by clicking the "+" icon in the top-right corner and then the Wi-Fi icon. Enter the IP address or hostname into the input box and confirm the connection.
 
-NOTE: If you are experincing problems connecting to your ESPHome MCU, try using
+*NOTE: If you are experincing problems connecting to your ESPHome MCU, try using
 the IP address instead of the hostname. ESPHomes mDNS hostname resolution can
-sometimes be causing intermittent problems.
+sometimes be causing intermittent problems.*
 
 ESPHome Web App will establish a connection with your ESPHome-based device, displaying all available entities and their respective states. The intuitive UI facilitates various actions, from toggling lights and switches to adjusting light color and color temperature, fan speeds, or cover positions and tilt.
 
