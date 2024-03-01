@@ -1,4 +1,4 @@
-.number input[type="number"] {
+.numberInput {
   display: flex;
   justify-content: center;
   flex-grow: 1;

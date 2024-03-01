@@ -54,6 +54,7 @@ const CoverEntity = lazy(() => import('./entities/CoverEntity'));
 const NumberEntity = lazy(() => import('./entities/NumberEntity'));
 const TextEntity = lazy(() => import('./entities/TextEntity'));
 const LockEntity = lazy(() => import('./entities/LockEntity'));
+const ClimateEntity = lazy(() => import('./entities/ClimateEntity'));
 
 function getComponentForEntity(entity) {
   const loading = <Spinner />;
@@ -105,6 +106,10 @@ function getComponentForEntity(entity) {
     case 'lock':
       return <Suspense fallback={loading} key={entity.id}>
         <LockEntity entity={entity} />
+      </Suspense>;
+    case 'climate':
+      return <Suspense fallback={loading} key={entity.id}>
+        <ClimateEntity entity={entity} />
       </Suspense>;
     default:
       return <StateEntity entity={entity} key={entity.id} />
