@@ -11,7 +11,7 @@ Assistant/ESPHome?".
 
 And while ESPHome and Home Assistant are indeed powerful tools for managing ESPHome-based microcontrollers, they usually necessitate additional infrastructure like a Raspberry Pi or Home Assistant color hardware. ESPHome Web App however does not.
 
-ESPHome Web App uniquely enables provisioning, configuration, and control of ESPHome based devices in locations where such infrastructure might not be readily available, such as caravans and trailers, storage units, company offices, the coffeeshop around the corner or your parents home. There are many settings in which deploying additional hardware to manage and control ESPHome based devices is either too complicated, unsafe or simply unpractical. ESPHome Web App fills this gaps and gives users a viable alternative.
+ESPHome Web App uniquely enables provisioning, configuration, and control of ESPHome based devices in locations where such infrastructure might not be readily available, such as caravans and trailers, storage units, company offices, the coffeeshop around the corner or your parents home. There are many settings in which deploying additional hardware to manage and control ESPHome based devices is either too complicated, unsafe or simply unpractical. ESPHome Web App fills this gap and gives users a viable alternative.
 
 In addition, many "Makers", people and bussinesses that are building and deploying bespoke hardware solutions on the basis of ESPs and ESPHome, have a need for user-friendly and easily customizable user interfaces for their products. ESPHome Web App allows those Makers to deploy a customized and branded version of ESPHome Web App specficically for their users and products, allowing their users to seamlessly setup and control their ESPHome based hardware. All without having to dedicate large budgets to custom app development.
 
@@ -29,7 +29,8 @@ In addition, many "Makers", people and bussinesses that are building and deployi
   works.
 - Graceful fallback on browsers that do not support Private Network Access.
 
-* Some features are only available in the most recent versions of modern browsers with Private Network Access support.
+
+\* *Some features are only available in the most recent versions of modern browsers with Private Network Access support.*
 
 ## Getting Started
 To begin using ESPHome Web App, flash an ESP32 or ESP8266 microcontroller with ESPHome, including the web_server component, and connect it to Wi-Fi.
