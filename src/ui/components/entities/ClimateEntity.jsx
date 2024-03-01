@@ -110,7 +110,7 @@ export default function ClimateEntity({entity}) {
       <EntitySection title="State">
         <h3 className={css(flex, flexFill)}>{state.state}</h3>
         <div>
-          <span>Current Tempeature</span>
+          <span>Current Temperature</span>
           <h3 className={flex}>{state.current_temperature}</h3>
         </div>
       </EntitySection>
