@@ -39,7 +39,7 @@ To begin using ESPHome Web App, flash an ESP32 or ESP8266 microcontroller with E
 web_server:
 ```
 
-Then, access ESPHome Web App (an instance is hosted by me at https://esplink.rarelyunplugged.com) and add your ESPHome-based device by clicking the "+" icon in the top-right corner and then the Wi-Fi icon. Enter the IP address or hostname into the input box and confirm the connection.
+Then, access ESPHome Web App (an instance is hosted by me at https://esplink.app) and add your ESPHome-based device by clicking the "+" icon in the top-right corner and then the Wi-Fi icon. Enter the IP address or hostname into the input box and confirm the connection.
 
 *NOTE: If you are experincing problems connecting to your ESPHome MCU, try using
 the IP address instead of the hostname. ESPHomes mDNS hostname resolution can
@@ -65,7 +65,7 @@ privacy and safety while using ESPHome Web App and also enables many of the more
 advanced features, like offline access, USB provisioning and firmware flashing.
 
 ## Self-hosting and Branding
-While an instance of ESPHome Web App is hosted at https://esplink.rarelyunplugged.com, the app is designed for easy self-hosting and branding.
+While an instance of ESPHome Web App is hosted at https://esplink.app, the app is designed for easy self-hosting and branding.
 
 To do so, simply clone this code repository to your web server, run the build
 script with `npm run build` and point your document root to the generated `public/`
