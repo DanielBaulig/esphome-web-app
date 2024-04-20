@@ -1,6 +1,6 @@
 {
   "name": "esphome-web-app",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A standalone app for flashing, provisioning and controlling of the ESPhome devices",
   "keywords": [
     "esphome",
@@ -23,7 +23,7 @@
     "react-dom": "^18.2.0",
     "react-transition-group": "^4.4.5",
     "rollup-plugin-output-manifest": "^2.0.0",
-    "vite": "^4.4.11",
+    "vite": ">=4.5.3",
     "vite-plugin-top-level-await": "^1.4.1"
   },
   "scripts": {
