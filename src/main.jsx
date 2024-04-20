@@ -238,7 +238,7 @@ function App({controllerRegistry}) {
   }
 
 
-  const strictMixedContentWarning = <Toast style="warning" visible={hasStrictMixedContent || true}>
+  const strictMixedContentWarning = <Toast style="warning" visible={hasStrictMixedContent}>
     This user agent appears to not allow access to private network hosts from secure origins. Please try loading the <a href={href}>insecure origin</a> instead.
   </Toast>;
 
