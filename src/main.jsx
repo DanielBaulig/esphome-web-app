@@ -8,7 +8,7 @@ import Toast from './ui/Toast.jsx';
 
 import { useState, useEffect, useRef } from 'react';
 
-import { title, insecureOrigin } from './config';
+import { title, insecureOrigin, insecureOriginTemplate } from './config';
 import { footer, dropTarget, dropIndicator, dropSpacer } from './main.module.css';
 
 function privateAddressSpaceFetch(...args) {
@@ -217,7 +217,6 @@ function App({controllerRegistry}) {
     };
   }, []);
 
-
   let href = insecureOrigin;
   if (!href) {
     const url = new URL(location.href);
@@ -225,8 +224,22 @@ function App({controllerRegistry}) {
     href = url.href;
   }
 
-  const strictMixedContentWarning = <Toast style="warning" visible={hasStrictMixedContent}>
-    This user agent appears to  not allow access to private network hosts from secure origins. Please try loading the <a href={href}>insecure origin</a> instead.
+  if (insecureOriginTemplate) {
+    const url = new URL(location.href);
+    const { hostname, port, protocol, pathname, search, hash } = url;
+
+    const applyTemplate = (s, o) => {
+      const keys = Object.keys(o);
+      const values = Object.values(o);
+      return new Function(...keys, `return \`${s}\`;`)(...values);
+    };
+
+    href = applyTemplate(insecureOriginTemplate, { hostname, port, protocol, pathname, search, hash });
+  }
+
+
+  const strictMixedContentWarning = <Toast style="warning" visible={hasStrictMixedContent || true}>
+    This user agent appears to not allow access to private network hosts from secure origins. Please try loading the <a href={href}>insecure origin</a> instead.
   </Toast>;
 
   return (

@@ -3,3 +3,4 @@ const config = (await import.meta.glob('../esphome-web.json', {eager: true}))['.
 export const title = config.title || 'ESPHome Web App';
 export const filters = config.filters || [];
 export const insecureOrigin = config.insecureOrigin;
+export const insecureOriginTemplate = config.insecureOriginTemplate;
